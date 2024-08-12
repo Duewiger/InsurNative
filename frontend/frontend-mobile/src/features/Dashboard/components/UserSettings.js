@@ -31,7 +31,7 @@ const UserSettings = () => {
                 </View>
                 <View style={styles.settingsDataContainerStyle}>
                     {/* <Text style={styles.settingsDataHeadingStyle}>Personenbezogene Daten</Text> */}
-                    {['Sprache der App', 'Passwort ändern', 'Datenschutz', 'Infos', 'Konto löschen' ].map((label, index) => (
+                    {['Sprache der App', 'Benachrichtigungen', 'Datenschutz', 'Infos', 'Passwort ändern', 'Konto löschen'].map((label, index) => (
                         <View key={index} style={styles.settingsBoxStyle}>
                             <Text style={styles.settingsBoxTextStyle}>
                                 {label}

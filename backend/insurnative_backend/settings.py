@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     # Local
     "accounts.apps.AccountsConfig",
     "assistant.apps.AssistantConfig",
-    "documents.apps.DocumentsConfig",
 ]
 
 MIDDLEWARE = [
@@ -76,11 +75,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django_auto_logout.middleware.auto_logout", # Auto logout
     "axes.middleware.AxesMiddleware", # Brute Force
-]
-
-AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesStandaloneBackend',
-    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = "insurnative_backend.urls"
@@ -166,7 +160,101 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
+# Cross-origin resource sharing (CORS)
+CORS_ORIGIN_WHITELIST = (
+    # React regular
+    "http://localhost:3000",
+    # Backend regular
+    "http://localhost:8000",
+)
+
+
+# Cross-Site Request Forgery (CSRF)
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+    "axes.backends.AxesStandaloneBackend",
+)
+
+
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+DEFAULT_FROM_EMAIL = "no_reply@duewiger.com"
+EMAIL_HOST = "w01c2459.kasserver.com"
+EMAIL_PORT = 587  # Der Port kann je nach Anforderungen variieren
+EMAIL_USE_TLS = True  # Aktiviere dies, wenn du TLS verwenden möchtest
+EMAIL_USE_SSL = False  # Deaktiviere dies, wenn du SSL verwenden möchtest
+EMAIL_HOST_USER = "kd@duewiger.com"
+EMAIL_HOST_PASSWORD = "rXyfgf7i"
+
+
+AUTO_LOGOUT = {
+    'SESSION_TIME': 3600,
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+    'MESSAGE': 'The session has expired. Please login again to continue.',
+}  # logout after 15 seconds
+
+
+# AXES CONFIGURATION
+AXES_FAILURE_LIMIT: 3 # How many times a user can fail login
+AXES_COOLOFF_TIME: 1 # Wait 1 hour before attempting to login again
+AXES_RESET_ON_SUCCESS = True # Reset failed login attempts
+# AXES_LOCKOUT_TEMPLATE = 'accounts/account_locked.html' # Add a custom template
+
+# python manage.py axes_reset for manually reset
+# Reset on success to set back the attempts to 0
+
+# # Other AXES Configurations - Blocking User instead of IP-Adress
+# AXES_FAILURE_LIMIT = 5  # Anzahl der erlaubten fehlgeschlagenen Versuche
+# AXES_COOLOFF_TIME = 1  # Abkühlzeit in Stunden
+# AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = True  # Sperre pro Kombination aus Benutzername und IP
+# AXES_RESET_ON_SUCCESS = True  # Rücksetzen der fehlgeschlagenen Versuche bei erfolgreicher Anmeldung
+# AXES_LOCKOUT_TEMPLATE = 'accounts/account_locked.html'  # Sperrvorlage
+# AXES_LOGGER = 'axes.watch_login'  # Protokollierung
+# AXES_VERBOSE = True  # Ausführliche Protokollierung
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "accounts.CustomUser"
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}

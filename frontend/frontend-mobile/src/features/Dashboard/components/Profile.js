@@ -66,8 +66,8 @@ const Profile = () => {
                 </View>
                 <View style={styles.profileDataContainerStyle}>
                     <Text style={styles.profileDataHeadingStyle}>Personenbezogene Daten</Text>
-                    {['Sprache', 'E-Mail', 'Vorname', 'Nachname', 
-                    'Straße', 'Hausnummer', 'Postleitzahl', 'Ort', 'Land', 'Geburtsdatum' ].map((label, index) => (
+                    {['E-Mail', 'Vorname', 'Nachname', 
+                    'Straße', 'Hausnummer', 'Postleitzahl', 'Ort', 'Land', 'Geburtsdatum', 'Passwort' ].map((label, index) => (
                         <View key={index} style={styles.profileBoxStyle}>
                             <Text style={styles.profileBoxTextStyle}>
                                 {label}
