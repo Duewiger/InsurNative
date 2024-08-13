@@ -1,20 +1,31 @@
 import React, { useState } from "react";
-import { SafeAreaView, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Link } from "@react-navigation/native";
 import styles from "./Login.styles";
 import SliderSmall from '../../components/SliderSmall';
 import { useNavigation } from "@react-navigation/native";
+import { login } from "../../services/api";
 
 const Login = () => {
     const [focusedInput, setFocusedInput] = useState(null);
     const navigation = useNavigation();
 
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
     const handleBackButtonPress = () => {
         navigation.replace('Highlights');
     };
 
-    const handleLoginPress = () => {
-        navigation.replace('DashboardTabs');
+    const handleLoginPress = async () => {
+        try {
+            const credentials = { email, password };
+            const data = await login(credentials);
+            navigation.replace('DashboardTabs');
+        } catch (error) {
+            console.error('Login failed:', error);
+            Alert.alert('Login fehlgeschlagen', 'Bitte überprüfen Sie Ihre Anmeldedaten.');
+        }
     };
 
     const handleFocus = (inputName) => {
@@ -36,28 +47,47 @@ const Login = () => {
                     bounces={true}
                 >
                     <View style={styles.sliderViewStyle}>
-                        <TouchableOpacity onPress={handleBackButtonPress}><Image style={styles.backButtonStyle} source={require('../../../assets/icons/arrow_left_48px.gif')}></Image></TouchableOpacity>
+                        <TouchableOpacity onPress={handleBackButtonPress}>
+                            <Image style={styles.backButtonStyle} source={require('../../../assets/icons/arrow_left_48px.gif')}></Image>
+                        </TouchableOpacity>
                         <SliderSmall />
                     </View>
                     <Text style={styles.headlineStyle}>Einloggen</Text>
                     <Text style={styles.sublineStyle}>Loggen Sie sich ein und lassen Sie Ihren persönlichen Assistenten Ihre Versicherungen übersetzen.<Link to="/Highlights" style={styles.linkStyle}> Wie das?</Link></Text>
                     <View style={styles.inputRow}>
-                        {['E-Mail-Adresse', 'Passwort'].map((label, index) => (
-                            <View key={index}>
-                                <Text style={styles.loginLabelStyle}>{label}</Text>
-                                <TextInput
-                                    style={[
-                                        styles.inputStyle,
-                                        focusedInput === label && styles.inputFocusedStyle
-                                    ]}
-                                    onFocus={() => handleFocus(label)}
-                                    onBlur={handleBlur}
-                                    inputMode={label === 'E-Mail-Adresse' ? 'email' : 'text'}
-                                    secureTextEntry={label === 'Passwort'}
-                                    selectionColor="#16c72e"
-                                />
-                            </View>
-                        ))}
+                        <View>
+                            <Text style={styles.loginLabelStyle}>E-Mail-Adresse</Text>
+                            <TextInput
+                                style={[
+                                    styles.inputStyle,
+                                    focusedInput === 'E-Mail-Adresse' && styles.inputFocusedStyle
+                                ]}
+                                onFocus={() => handleFocus('E-Mail-Adresse')}
+                                onBlur={handleBlur}
+                                inputMode="email"
+                                value={email}
+                                onChangeText={setEmail}
+                                selectionColor="#16c72e"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
+                        </View>
+                        <View>
+                            <Text style={styles.loginLabelStyle}>Passwort</Text>
+                            <TextInput
+                                style={[
+                                    styles.inputStyle,
+                                    focusedInput === 'Passwort' && styles.inputFocusedStyle
+                                ]}
+                                onFocus={() => handleFocus('Passwort')}
+                                onBlur={handleBlur}
+                                inputMode="text"
+                                secureTextEntry
+                                value={password}
+                                onChangeText={setPassword}
+                                selectionColor="#16c72e"
+                            />
+                        </View>
                     </View>
                     <TouchableOpacity
                         style={styles.loginButtonStyle}
@@ -66,15 +96,11 @@ const Login = () => {
                         <Text style={styles.loginButtonTextStyle}>Einloggen</Text>
                     </TouchableOpacity>
                     <Text style={styles.sublineStyle}>Sie haben Ihr <Link to="/PasswordReset" style={styles.linkStyle}>Passwort vergessen?</Link></Text>
-                    </ScrollView>
-                    <View style={styles.dataProtectionLinkViewStyle}>
-                        <Text
-                            style={styles.dataProtectionTextStyle}
-                        >Impressum</Text>
-                        <Text
-                            style={styles.dataProtectionTextStyle}
-                        >Datenschutzerklärung</Text>
-                    </View>
+                </ScrollView>
+                <View style={styles.dataProtectionLinkViewStyle}>
+                    <Text style={styles.dataProtectionTextStyle}>Impressum</Text>
+                    <Text style={styles.dataProtectionTextStyle}>Datenschutzerklärung</Text>
+                </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

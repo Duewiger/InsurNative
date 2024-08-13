@@ -17,16 +17,16 @@ class CustomAdminUser(UserAdmin):
         # Für Admins
         (None, {'fields': ('name',)}),
         # Für Kunden
-        ('Customer Info', {'fields': ('salutation', 'first_name', 'last_name', 'birth_date', 'street', 'house_number', 'city', 'postal_code', 'phone_number', 'profile_picture')}),
+        ('Customer Info', {'fields': ('salutation', 'birth_date', 'street', 'house_number', 'city', 'postal_code', 'phone_number', 'profile_picture')}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
         # Für Admins
         (None, {'fields': ('name',)}),
         # Für Kunden
-        ('Customer Info', {'fields': ('salutation', 'first_name', 'last_name', 'birth_date', 'street', 'house_number', 'city', 'postal_code', 'phone_number', 'profile_picture')}),
+        ('Customer Info', {'fields': ('salutation', 'birth_date', 'street', 'house_number', 'city', 'postal_code', 'phone_number', 'profile_picture')}),
     )
 
-# admin.site.register(CustomUser, CustomAdminUser)
+admin.site.register(CustomUser, CustomAdminUser)
 admin.site.register(Document)
 admin.site.register(Registration)
 admin.site.register(UserSettings)

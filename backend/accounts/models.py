@@ -13,8 +13,8 @@ class CustomUser(AbstractUser):
     ### Customers ###
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     salutation = models.CharField(max_length=50, null=True, blank=True)
-    first_name = models.CharField(max_length=100, null=True, blank=True)
-    last_name = models.CharField(max_length=100, null=True, blank=True)
+    first_name = models.CharField(max_length=100, null=False, blank=False, default="")
+    last_name = models.CharField(max_length=100, null=False, blank=False, default="")
     birth_date = models.DateField(null=True, blank=True)
     street = models.CharField(max_length=100, null=True, blank=True)
     house_number = models.CharField(max_length=20, null=True, blank=True)

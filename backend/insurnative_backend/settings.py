@@ -160,6 +160,9 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
 # Cross-origin resource sharing (CORS)
 CORS_ORIGIN_WHITELIST = (
     # React regular
@@ -168,6 +171,11 @@ CORS_ORIGIN_WHITELIST = (
     "http://localhost:8000",
 )
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://192.168.2.130:8000",
+    "http://localhost:8000"
+]
 
 # Cross-Site Request Forgery (CSRF)
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
