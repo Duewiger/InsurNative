@@ -5,6 +5,8 @@ import styles from "./Login.styles";
 import SliderSmall from '../../components/SliderSmall';
 import { useNavigation } from "@react-navigation/native";
 import { login } from "../../services/api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Login = () => {
     const [focusedInput, setFocusedInput] = useState(null);
@@ -21,12 +23,21 @@ const Login = () => {
         try {
             const credentials = { email, password };
             const data = await login(credentials);
-            navigation.replace('DashboardTabs');
+            const token = data.access;
+            if (token) {
+                await AsyncStorage.setItem('token', token); // Token speichern
+                navigation.replace('DashboardTabs');
+            } else {
+                console.error('No token found in login response');
+                Alert.alert('Login fehlgeschlagen', 'Token wurde nicht empfangen.');
+            }
         } catch (error) {
             console.error('Login failed:', error);
             Alert.alert('Login fehlgeschlagen', 'Bitte überprüfen Sie Ihre Anmeldedaten.');
         }
     };
+    
+    
 
     const handleFocus = (inputName) => {
         setFocusedInput(inputName);

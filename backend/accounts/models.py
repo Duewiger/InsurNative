@@ -52,7 +52,7 @@ class CustomUser(AbstractUser):
 class Document(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-    file = models.FileField(upload_to="user_documents")
+    file = models.FileField(upload_to="user_files")
     
     
 class Registration(models.Model):

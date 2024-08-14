@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     legalTextStyle: {
         fontSize: 12,
-        color: '#FFFFFF',
+        color: '#A5A5A5',
         textAlign: 'center',
     },
 });

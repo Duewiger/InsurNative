@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -21,8 +22,12 @@ class LoginPageView(APIView):
         password = request.data.get('password')
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            login(request, user)
-            return Response({"message": "Login erfolgreich!"}, status=status.HTTP_200_OK)
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "message": "Login erfolgreich!"
+            }, status=status.HTTP_200_OK)
         return Response({"error": "Ungültige Benutzerdaten"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -30,8 +35,13 @@ class LogoutPageView(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
-        logout(request=request)
-        return Response({"message": "Logout erfolgreich"}, status=status.HTTP_200_OK)    
+        try:
+            refresh_token = request.data.get("refresh_token")
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Logout erfolgreich"}, status=status.HTTP_200_OK) 
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)   
         
 
 class ForgotPasswordPageView(APIView):
@@ -40,10 +50,10 @@ class ForgotPasswordPageView(APIView):
         user = CustomUser.objects.filter(email=email).first()
         if user:
             token = default_token_generator.make_token(user)
-            reset_url = f"http://example.com/reset-password/{token}/"
+            reset_url = f"http://example.com/reset-password/{user.pk}/{token}/"
             send_mail(
                 "Passwort Zurücksetzen",
-                f"Nutzen Sie den folgenden Link zum Zurücksetzen Ihres Passworts: {reset_url}",
+                f"Nutzen Sie den folgenden Link zum Zurücksetzen Ihres Passwortes: {reset_url}",
                 "no_reply@duewiger.com",
                 [email],
             )
