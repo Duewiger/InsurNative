@@ -96,6 +96,15 @@ const styles = StyleSheet.create({
         color: '#A5A5A5',
         textAlign: 'center',
     },
+    icon: {
+        padding: 5,
+        borderRadius: 10,
+    },
+    iconPressed: {
+        padding: 5,
+        borderRadius: 10,
+        backgroundColor: '#e0e0e0',
+    },
 });
 
 export default styles;
