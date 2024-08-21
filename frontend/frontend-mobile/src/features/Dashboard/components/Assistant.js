@@ -7,6 +7,7 @@ import axios from 'axios';
 import styles from "./Assistant.styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const Assistant = () => {
     const [focusedInput, setFocusedInput] = useState(null);
     const [message, setMessage] = useState('');
@@ -24,7 +25,7 @@ const Assistant = () => {
             typingTimeout.current = setTimeout(() => {
                 setDisplayedText((prev) => prev + response.charAt(typingIndex));
                 setTypingIndex((prev) => prev + 1);
-            }, 10); // Erhöhtes Intervall für natürlicheres Typing
+            }, 10);
             return () => clearTimeout(typingTimeout.current);
         }
     }, [typingIndex, response, isTyping]);
@@ -63,7 +64,7 @@ const Assistant = () => {
     const handleSend = async () => {
         clearTimeout(typingTimeout.current);
         setDisplayedText('');
-        setResponse(''); // Reset der Response für saubere Ausgabe
+        setResponse('');
         setTypingIndex(0);
         setIsTyping(true);
         setIsLoading(true);
@@ -80,11 +81,11 @@ const Assistant = () => {
         }
 
         try {
-            const token = await AsyncStorage.getItem('token');
+            const accessToken = await AsyncStorage.getItem('accessToken');
             const response = await axios.post('http://192.168.2.130:8000/assistant/upload/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${accessToken}`,
                 },
             });
             setResponse(response.data.response);
@@ -93,7 +94,7 @@ const Assistant = () => {
         } finally {
             setIsLoading(false);
             if (!isTyping) {
-                setIsPressed({ paperclip: false, camera: false, send: false }); // Icons zurücksetzen
+                setIsPressed({ paperclip: false, camera: false, send: false });
             }
         }
     };

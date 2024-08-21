@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -9,8 +10,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.http import FileResponse
 
-from .models import CustomUser, Document
+from .models import CustomUser, Document, UserSettings
 from .serializers import CustomUserSerializer, DocumentSerializer, UserSettingsSerializer
 
 
@@ -35,13 +37,18 @@ class LogoutPageView(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
+        print(f"Authorization Header: {request.headers.get('Authorization')}")
+        refresh_token = request.data.get("refresh_token")
+        if not refresh_token:
+            return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
+        print(f"Received Refresh Token: {refresh_token}")
         try:
-            refresh_token = request.data.get("refresh_token")
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response({"message": "Logout erfolgreich"}, status=status.HTTP_200_OK) 
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)   
+            print(f"Logout error: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
 class ForgotPasswordPageView(APIView):
@@ -65,6 +72,8 @@ class SignupPageView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
+        request.data['username'] = request.data.get('email')
+        
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -83,33 +92,76 @@ class AccountPageView(generics.RetrieveAPIView):
 class AccountDataEditView(generics.UpdateAPIView):
     serializer_class = CustomUserSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        
+        print(self.request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AccountDeleteView(generics.DestroyAPIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user
-    
-    
-class AccountDataDeleteView(generics.DestroyAPIView):
-    serializer_class = CustomUserSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+        user.delete()
+        return Response({"detail": "Ihr Konto wurde erfolgreich gelöscht."}, status=status.HTTP_204_NO_CONTENT)
+
+
+class DocumentListView(generics.ListAPIView):
+    serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticated]
-    
-    def get_object(self):
-        return self.request.user
-    
+
+    def get_queryset(self):
+        return Document.objects.filter(user=self.request.user)
+
 
 class DocumentUploadView(generics.CreateAPIView):
     serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        print("User:", self.request.user)
         serializer.save(user=self.request.user)
         
+
+class DocumentDownloadView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    # lookup_field = 'id'
+
+    def get_queryset(self):
+        return Document.objects.filter(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        document = self.get_object()
+        if not document.file or not document.file.path:
+            return Response({"error": "Datei nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
+        response = FileResponse(document.file.open(), content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{document.file.name.split("/")[-1]}"'
+        return response
+
 
 class DocumentDeleteView(generics.DestroyAPIView):
     serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return Document.objects.get(id=self.kwargs['pk'], user=self.request.user)
+        # Präzisere Fehlerbehandlung bei der Abfrage
+        return get_object_or_404(Document, id=self.kwargs['pk'], user=self.request.user)
 
         
 class UserSettingsView(generics.RetrieveUpdateAPIView):
@@ -117,5 +169,25 @@ class UserSettingsView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        # Erstellt die UserSettings, falls sie nicht existieren
+        user = self.request.user
+        UserSettings.objects.get_or_create(user=user)
+        return user.settings
+    
+
+class UserSettingsEditView(generics.UpdateAPIView):
+    serializer_class = UserSettingsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
         return self.request.user.settings
+
+    def update(self, request, *args, **kwargs):
+        user_settings = self.get_object()
+        serializer = self.get_serializer(user_settings, data=request.data, partial=True)
         
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -23,21 +23,21 @@ const Login = () => {
         try {
             const credentials = { email, password };
             const data = await login(credentials);
-            const token = data.access;
-            if (token) {
-                await AsyncStorage.setItem('token', token); // Token speichern
+            const accessToken = data.access;
+            const refreshToken = data.refresh;
+            if (accessToken && refreshToken) {
+                await AsyncStorage.setItem('accessToken', accessToken);
+                await AsyncStorage.setItem('refreshToken', refreshToken);
                 navigation.replace('DashboardTabs');
             } else {
-                console.error('No token found in login response');
+                console.error('Tokens not found in login response');
                 Alert.alert('Login fehlgeschlagen', 'Token wurde nicht empfangen.');
             }
         } catch (error) {
             console.error('Login failed:', error);
             Alert.alert('Login fehlgeschlagen', 'Bitte überprüfen Sie Ihre Anmeldedaten.');
         }
-    };
-    
-    
+    };    
 
     const handleFocus = (inputName) => {
         setFocusedInput(inputName);

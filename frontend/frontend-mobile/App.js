@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { useState } from 'react';
-
-import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
-
+import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { store } from './src/store/index.js';
 
+// Importiere deine Screens
 import StartUp from './src/features/StartUp/StartUp';
 import Highlights from './src/features/Highlights/Highlights';
 import CookieBanner from './src/features/CookieBanner/CookieBanner';
@@ -25,6 +25,7 @@ import CustomButton from './src/components/CustomButton';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Funktion zum Laden der Fonts
 const loadFonts = () => {
   return Font.loadAsync({
     'Inter-Black': require('./assets/fonts/Inter-Black.ttf'),
@@ -114,69 +115,86 @@ const DashboardTabs = ({ navigation }) => {
   );
 };
 
+// Verhindere, dass der SplashScreen automatisch verschwindet
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Warten, bis die Fonts geladen sind
+        await loadFonts();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // SplashScreen ausblenden, wenn die Fonts geladen sind
+        setFontsLoaded(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
+  }, []);
+
   if (!fontsLoaded) {
-    return (
-      <AppLoading
-        startAsync={loadFonts}
-        onFinish={() => setFontsLoaded(true)}
-        onError={console.warn}
-      />
-    )
+    // Das SplashScreen bleibt, bis die Fonts geladen sind und `hideAsync` aufgerufen wird
+    return null;
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="StartUp"
-          component={StartUp}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Highlights"
-          component={Highlights}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CookieBanner"
-          component={CookieBanner}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PasswordReset"
-          component={PasswordReset}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={UserSettings}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DashboardTabs"
-          component={DashboardTabs}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="StartUp"
+            component={StartUp}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Highlights"
+            component={Highlights}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CookieBanner"
+            component={CookieBanner}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PasswordReset"
+            component={PasswordReset}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={UserSettings}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DashboardTabs"
+            component={DashboardTabs}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

@@ -84,8 +84,7 @@ const styles = StyleSheet.create({
     },
     profileDataContainerStyle: {
         width: '100%',
-        marginVertical: 25,
-        marginBottom: 50,
+        marginVertical: 10,
     },
     profileDataHeadingStyle: {
         fontSize: 16,
@@ -111,6 +110,27 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Medium',
         fontSize: 16,
     },
+    profileDateButtonStyle: {
+        backgroundColor: '#16c72e',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: 50,
+        borderRadius: 5,
+        marginVertical: 10,
+    },
+    profileDateButtonTextStyle: {
+        color: '#FFFFFF',
+        fontFamily: 'Inter-Medium',
+        fontSize: 14,
+    },
+    profileDateTextStyle: {
+        color: '#FFFFFF',
+        fontFamily: 'Inter-Medium',
+        fontSize: 16,
+        marginTop: 10,
+        textAlign: 'center',
+    },
     dataProtectionLinkViewStyle: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -119,6 +139,20 @@ const styles = StyleSheet.create({
     dataProtectionTextStyle: {
         color: '#FFFFFF',
         fontSize: 12,
+        fontFamily: 'Inter-Medium',
+    },
+    saveButtonStyle: {
+        backgroundColor: '#16c72e',
+        justifyContent: 'center',
+        width: '100%',
+        height: 50,
+        borderRadius: 5,
+        marginVertical: 10,
+    },
+    saveButtonTextStyle: {
+        color: '#FFFFFF',
+        textAlign: 'center',
+        fontSize: 18,
         fontFamily: 'Inter-Medium',
     },
 });

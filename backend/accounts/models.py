@@ -7,15 +7,22 @@ from django.db.models.signals import post_save
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+import datetime
 
 
 class CustomUser(AbstractUser):
+    # Additional to default -> email set to keep it unique
+    email = models.EmailField(unique=True)
+    # username set to False and changed to mail to avoid double-key existing
+    username = models.CharField(max_length=150, unique=False)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
     ### Customers ###
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     salutation = models.CharField(max_length=50, null=True, blank=True)
     first_name = models.CharField(max_length=100, null=False, blank=False, default="")
     last_name = models.CharField(max_length=100, null=False, blank=False, default="")
-    birth_date = models.DateField(null=True, blank=True)
+    birth_date = models.CharField(max_length=100, null=False, blank=True, default=f"{datetime.datetime.now().date()}")
     street = models.CharField(max_length=100, null=True, blank=True)
     house_number = models.CharField(max_length=20, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
@@ -76,6 +83,9 @@ def user_created(sender, instance, created, **kwargs):
             user=instance,
             customer_registration=json.dumps(data)
         )
+
+        # Erstelle automatisch die UserSettings für den neuen Benutzer
+        UserSettings.objects.create(user=instance)
     
 
 class UserSettings(models.Model):
@@ -86,4 +96,3 @@ class UserSettings(models.Model):
     
     def __str__(self):
         return f"{self.user.username}'s settings"
-    

@@ -25,12 +25,33 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Regular',
         fontSize: 30,
     },
+    uploadContainerStyle: {
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
     sublineStyle: {
         color: '#FFFFFF',
         fontFamily: 'Inter-Regular',
         fontSize: 24,
         textAlign: 'center',
         paddingTop: 25,
+        marginLeft: 5,
+        marginBottom: 10,
+    },
+    uploadButtonStyle: {
+        backgroundColor: '#16c72e',
+        justifyContent: 'center',
+        width: '100%',
+        height: 50,
+        borderRadius: 5,
+        marginHorizontal: 10,
+        marginVertical: 10,
+    },
+    uploadButtonTextStyle: {
+        color: '#FFFFFF',
+        textAlign: 'center',
+        fontSize: 16,
+        fontFamily: 'Inter-Medium',
     },
     userIcon: {
         padding: 5,
@@ -77,7 +98,7 @@ const styles = StyleSheet.create({
     },
     boxContainer: {
         width: '100%',
-        marginVertical: 25,
+        marginVertical: 10,
         marginBottom: 50,
     },
     boxStyle: {
@@ -89,10 +110,20 @@ const styles = StyleSheet.create({
         padding: 20,
         marginVertical: 10,
     },
+    documentInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
     boxHeadlineStyle: {
         color: '#D9D9D9',
         fontFamily: 'Inter-Medium',
-        fontSize: 18,
+        fontSize: 12,
+        textAlign: 'center',
+        flex: 1,
+    },
+    trashIcon: {
+        padding: 5,
     },
     scrollViewContent: {
         flexGrow: 1,

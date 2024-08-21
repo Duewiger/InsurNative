@@ -3,18 +3,20 @@ import { SafeAreaView, View, Image, Text, TextInput, TouchableOpacity, ScrollVie
 import { Link } from "@react-navigation/native";
 import styles from "./SignUp.styles";
 import SliderSmall from '../../components/SliderSmall';
+import { signup } from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
+
 
 const SignUp = () => {
     const [focusedInput, setFocusedInput] = useState(null);
+    const [first_name, setFirstName] = useState('');
+    const [last_name, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const navigation = useNavigation();
 
     const handleBackButtonPress = () => {
         navigation.replace('Highlights');
-    };
-
-    const handleSignUpPress = () => {
-        navigation.replace('Login');
     };
 
     const handleFocus = (inputName) => {
@@ -23,6 +25,21 @@ const SignUp = () => {
 
     const handleBlur = () => {
         setFocusedInput(false);
+    };
+
+    const handleSignUpPress = async () => {
+        try {
+            const values = { first_name, last_name, email, password };
+            const data = await signup(values);
+            if (data) {
+                navigation.replace('Login');
+            } else {
+                Alert.alert('Registrierung fehlgeschlagen');
+            }
+        } catch (error) {
+            console.error('SignUp failed:', error);
+            Alert.alert('Login fehlgeschlagen', 'Bitte überprüfen Sie Ihre Anmeldedaten.');
+        }
     };
 
     return (
@@ -42,18 +59,25 @@ const SignUp = () => {
                     <Text style={styles.headlineStyle}>Konto erstellen</Text>
                     <Text style={styles.sublineStyle}>Die Registrierung und unser Service sind vollständig kostenlos.<Link to="/Highlights" style={styles.linkStyle}> Wie das?</Link></Text>
                     <View style={styles.inputRow}>
-                        {['Vorname', 'Nachname', 'E-Mail-Adresse', 'Passwort'].map((label, index) => (
+                        {[
+                            { label: 'Vorname', value: first_name, onChangeText: setFirstName },
+                            { label: 'Nachname', value: last_name, onChangeText: setLastName },
+                            { label: 'E-Mail', value: email, onChangeText: setEmail },
+                            { label: 'Passwort', value: password, onChangeText: setPassword },
+                        ].map((input, index) => (
                             <View key={index}>
-                                <Text style={styles.signUpLabelStyle}>{label}</Text>
+                                <Text style={styles.signUpLabelStyle}>{input.label}</Text>
                                 <TextInput
                                     style={[
                                         styles.inputStyle,
-                                        focusedInput === label && styles.inputFocusedStyle
+                                        focusedInput === input.label && styles.inputFocusedStyle
                                     ]}
-                                    onFocus={() => handleFocus(label)}
+                                    onFocus={() => handleFocus(input.label)}
                                     onBlur={handleBlur}
-                                    inputMode={label === 'E-Mail-Adresse' ? 'email' : 'text'}
-                                    secureTextEntry={label === 'Passwort'}
+                                    value={input.value}
+                                    onChangeText={input.onChangeText}
+                                    inputMode={input.label === 'E-Mail' ? 'email' : 'text'}
+                                    secureTextEntry={input.label === 'Passwort'}
                                     selectionColor="#16c72e"
                                 />
                             </View>
