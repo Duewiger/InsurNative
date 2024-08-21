@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
     settingsDataContainerStyle: {
         width: '100%',
         marginVertical: 25,
-        marginBottom: 50,
     },
     settingsDataHeadingStyle: {
         fontSize: 16,
@@ -49,13 +48,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#303030',
         borderRadius: 10,
-        padding: 10,
+        padding: 15,
         marginVertical: 10,
     },
     settingsBoxTextStyle: {
         color: '#A5A5A5',
         fontFamily: 'Inter-Medium',
-        fontSize: 12,
+        fontSize: 14,
     },
     settingsDataTextStyle: {
         color: '#FFFFFF',
@@ -70,6 +69,20 @@ const styles = StyleSheet.create({
     dataProtectionTextStyle: {
         color: '#FFFFFF',
         fontSize: 12,
+        fontFamily: 'Inter-Medium',
+    },
+    saveButtonStyle: {
+        backgroundColor: '#16c72e',
+        justifyContent: 'center',
+        width: '100%',
+        height: 50,
+        borderRadius: 5,
+        marginVertical: 10,
+    },
+    saveButtonTextStyle: {
+        color: '#FFFFFF',
+        textAlign: 'center',
+        fontSize: 18,
         fontFamily: 'Inter-Medium',
     },
 });

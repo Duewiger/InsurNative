@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.http import FileResponse
+from django.db.models import Q
 
 from .models import CustomUser, Document, UserSettings
 from .serializers import CustomUserSerializer, DocumentSerializer, UserSettingsSerializer
@@ -162,6 +163,21 @@ class DocumentDeleteView(generics.DestroyAPIView):
     def get_object(self):
         # Präzisere Fehlerbehandlung bei der Abfrage
         return get_object_or_404(Document, id=self.kwargs['pk'], user=self.request.user)
+    
+
+class DocumentSearchView(generics.ListAPIView):
+    serializer_class = DocumentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        query = self.request.query_params.get('q', None)
+        if query:
+            return Document.objects.filter(
+                Q(user=user) &
+                (Q(file__icontains=query) | Q(id__icontains=query))
+            )
+        return Document.objects.filter(user=user.id)
 
         
 class UserSettingsView(generics.RetrieveUpdateAPIView):

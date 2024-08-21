@@ -105,6 +105,20 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#e0e0e0',
     },
+    imagePreviewContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    imagePreview: {
+        width: 30,
+        height: 30,
+        borderRadius: 10,
+        marginRight: 10,
+    },
+    removeImageButton: {
+        padding: 5,
+    },
 });
 
 export default styles;

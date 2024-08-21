@@ -18,7 +18,6 @@ const Profile = () => {
         house_number: '',
         postal_code: '',
         city: '',
-        country: '',
     });
     const [profileImage, setProfileImage] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -178,7 +177,6 @@ const Profile = () => {
                         { label: 'Hausnummer', field: 'house_number' },
                         { label: 'Postleitzahl', field: 'postal_code' },
                         { label: 'Ort', field: 'city' },
-                        { label: 'Land', field: 'country' },
                     ].map((item, index) => (
                         <View key={index} style={styles.profileBoxStyle}>
                             <Text style={styles.profileBoxTextStyle}>{item.label}</Text>

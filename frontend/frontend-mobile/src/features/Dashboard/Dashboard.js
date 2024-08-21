@@ -9,19 +9,22 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 
-
 const Dashboard = () => {
     const navigation = useNavigation();
     const [focusedInput, setFocusedInput] = useState(null);
     const [documents, setDocuments] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(""); // Suchbegriff
     const [isUploading, setIsUploading] = useState(false);
 
-    const fetchDocuments = async () => {
+    const fetchDocuments = async (query = "") => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await axios.get('http://192.168.2.130:8000/accounts/api/documents/', {
+            const response = await axios.get('http://192.168.2.130:8000/accounts/api/document/search/', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+                },
+                params: {
+                    q: query, // Übergibt den Suchbegriff an die API
                 },
             });
             setDocuments(response.data);
@@ -31,7 +34,6 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        console.log("useEffect called");
         fetchDocuments();
     }, []);
 
@@ -41,6 +43,11 @@ const Dashboard = () => {
 
     const handleBlur = () => {
         setFocusedInput(false);
+    };
+
+    const handleSearchChange = (query) => {
+        setSearchQuery(query);
+        fetchDocuments(query); // Führt eine neue Suche aus, sobald der Suchbegriff geändert wird
     };
 
     const openProfile = () => {
@@ -186,8 +193,9 @@ const Dashboard = () => {
                             placeholderTextColor="#D9D9D9"
                             selectionColor="#16c72e"
                             underlineColorAndroid="transparent"
+                            value={searchQuery} // Suchbegriff anzeigen
+                            onChangeText={handleSearchChange} // Suchbegriff ändern
                         />
-                        <Icon name="microphone" size={24} color="#16c72e" style={styles.microIcon} />
                     </View>
                 </View>
                 <ScrollView 

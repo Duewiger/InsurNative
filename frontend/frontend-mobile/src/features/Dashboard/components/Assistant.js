@@ -1,19 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { SafeAreaView, View, Text, TextInput, Image, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as DocumentPicker from 'react-native-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import styles from "./Assistant.styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 const Assistant = () => {
     const [focusedInput, setFocusedInput] = useState(null);
     const [message, setMessage] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
     const [response, setResponse] = useState('');
-    const [isPressed, setIsPressed] = useState({ paperclip: false, camera: false, send: false });
+    const [isPressed, setIsPressed] = useState({ camera: false, send: false });
     const [displayedText, setDisplayedText] = useState('');
     const [typingIndex, setTypingIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +36,6 @@ const Assistant = () => {
             }
         })();
     }, []);
-    
 
     const handleFocus = () => {
         setFocusedInput(true);
@@ -48,38 +45,6 @@ const Assistant = () => {
         setFocusedInput(false);
     };
 
-    const handleFilePick = async () => {
-        try {
-            const result = await DocumentPicker.pick({
-                type: [DocumentPicker.types.allFiles],
-            });
-    
-            console.log('Selected file:', result);
-    
-            if (result[0].type.startsWith('image/')) {
-                setSelectedFile({
-                    uri: result[0].uri,
-                    name: result[0].name,
-                    type: result[0].type,
-                });
-            } else if (result[0].type === 'application/pdf') {
-                setSelectedFile({
-                    uri: result[0].uri,
-                    name: result[0].name,
-                    type: result[0].type,
-                });
-            } else {
-                alert('Dieser Dateityp wird nicht unterstützt.');
-            }
-        } catch (error) {
-            if (DocumentPicker.isCancel(error)) {
-                console.log('Auswahl abgebrochen.');
-            } else {
-                console.error('Fehler bei der Dokumentenauswahl:', error);
-            }
-        }
-    };
-    
     const handleTakePhoto = async () => {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -87,9 +52,7 @@ const Assistant = () => {
             aspect: [4, 3],
             quality: 1,
         });
-    
-        console.log(result);
-    
+
         if (!result.canceled && result.assets && result.assets.length > 0) {
             setSelectedFile({
                 uri: result.assets[0].uri,
@@ -97,7 +60,11 @@ const Assistant = () => {
                 type: 'image/jpeg',
             });
         }
-    };    
+    };
+
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+    };
 
     const handleSend = async () => {
         clearTimeout(typingTimeout.current);
@@ -109,8 +76,6 @@ const Assistant = () => {
 
         let formData = new FormData();
         formData.append('message', message);
-
-        console.log(selectedFile);
 
         if (selectedFile) {
             formData.append('file', {
@@ -134,7 +99,7 @@ const Assistant = () => {
         } finally {
             setIsLoading(false);
             if (!isTyping) {
-                setIsPressed({ paperclip: false, camera: false, send: false });
+                setIsPressed({ camera: false, send: false });
             }
         }
     };
@@ -176,15 +141,18 @@ const Assistant = () => {
                             <Text style={styles.messageResultStyle}>{displayedText}</Text>
                         )}
                     </ScrollView>
+
+                    {/* Vorschau für das angehängte Bild */}
+                    {selectedFile && (
+                        <View style={styles.imagePreviewContainer}>
+                            <Image source={{ uri: selectedFile.uri }} style={styles.imagePreview} />
+                            <TouchableOpacity style={styles.removeImageButton} onPress={handleRemoveFile}>
+                                <Icon name="times-circle" size={24} color="#FF0000" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
                     <View style={[styles.messageContainer, focusedInput && styles.inputFocusedStyle]}>
-                        <TouchableOpacity
-                            style={isPressed.paperclip ? styles.iconPressed : styles.icon}
-                            onPressIn={() => setIsPressed({ ...isPressed, paperclip: true })}
-                            onPressOut={() => setIsPressed({ ...isPressed, paperclip: false })}
-                            onPress={handleFilePick}
-                        >
-                            <Icon name="paperclip" size={20} color="#16c72e" />
-                        </TouchableOpacity>
                         <TouchableOpacity
                             style={isPressed.camera ? styles.iconPressed : styles.icon}
                             onPressIn={() => setIsPressed({ ...isPressed, camera: true })}

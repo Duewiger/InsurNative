@@ -67,7 +67,7 @@ export const editProfileData = async (data) => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const response = await api.put(
             'account/edit/',
-            data, // JSON-Daten
+            data,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -122,7 +122,7 @@ export const editProfileImage = async (imageUri) => {
     }
 };
 
-// Fetch user settings
+// Fetch user-settings function
 export const fetchUserSettings = async () => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -133,18 +133,11 @@ export const fetchUserSettings = async () => {
         });
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        console.error('Error fetching user settings:', error);
         throw error;
     }
 };
 
-// Edit user settings
 export const editUserSettings = async (settings) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -156,18 +149,11 @@ export const editUserSettings = async (settings) => {
         });
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        console.error('Error saving user settings:', error);
         throw error;
     }
 };
 
-// Delete account function
 export const deleteAccount = async () => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -178,13 +164,7 @@ export const deleteAccount = async () => {
         });
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        console.error('Error deleting account:', error);
         throw error;
     }
 };

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DocumentDownloadView, DocumentListView, LoginPageView, LogoutPageView, SignupPageView, AccountPageView, AccountDataEditView, AccountDeleteView, DocumentUploadView, DocumentDeleteView, UserSettingsEditView, UserSettingsView, ForgotPasswordPageView
+from .views import DocumentDownloadView, DocumentListView, DocumentSearchView, LoginPageView, LogoutPageView, SignupPageView, AccountPageView, AccountDataEditView, AccountDeleteView, DocumentUploadView, DocumentDeleteView, UserSettingsEditView, UserSettingsView, ForgotPasswordPageView
 
 urlpatterns = [
     path('api/login/', LoginPageView.as_view(), name='login'),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/document/upload/', DocumentUploadView.as_view(), name='document_upload'),
     path('api/document/download/<uuid:pk>/', DocumentDownloadView.as_view(), name='document_download'),
     path('api/document/delete/<uuid:pk>/', DocumentDeleteView.as_view(), name='document_delete'),
+    path('api/document/search/', DocumentSearchView.as_view(), name='document-search'),
     path('api/user-settings/', UserSettingsView.as_view(), name='user_settings'),
     path('api/user-settings/edit/', UserSettingsEditView.as_view(), name='user_settings_edit'),
     path('api/forgot-password/', ForgotPasswordPageView.as_view(), name='forgot_password'),

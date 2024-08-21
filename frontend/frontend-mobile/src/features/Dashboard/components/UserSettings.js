@@ -3,7 +3,7 @@ import { SafeAreaView, ScrollView, View, Text, Image, TouchableOpacity, Switch, 
 import { useNavigation } from "@react-navigation/native";
 import RNPickerSelect from "react-native-picker-select";
 import styles from "./UserSettings.styles";
-import { editUserSettings, deleteAccount, changePassword } from "../../../services/api";
+import { fetchUserSettings, editUserSettings, deleteAccount } from "../../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const UserSettings = () => {
@@ -14,12 +14,12 @@ const UserSettings = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const fetchUserSettings = async () => {
+    const loadUserSettings = async () => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await editUserSettings(accessToken);
+            const response = await fetchUserSettings(); // Die API zum Abrufen der Benutzereinstellungen wird aufgerufen
             if (response) {
-                setUserSettings(response);
+                setUserSettings(response); // Die Benutzereinstellungen werden im State gesetzt
             }
         } catch (error) {
             console.error("Error fetching user settings:", error);
@@ -27,7 +27,7 @@ const UserSettings = () => {
     };
 
     useEffect(() => {
-        fetchUserSettings();
+        loadUserSettings();
     }, []);
 
     const handleBackButtonPress = () => {
@@ -46,13 +46,14 @@ const UserSettings = () => {
             ...prevSettings,
             notifications_enabled: value,
         }));
+        Alert.alert("Hinweis", "Die Funktion zum Aktivieren der Benachrichtigungen ist in Arbeit und noch inaktiv.");
     };
 
     const handleSaveSettings = async () => {
         setIsSubmitting(true);
         try {
-            const data = await editUserSettings(userSettings);
-            if (data) {
+            const response = await editUserSettings(userSettings); // Die geänderten Einstellungen werden gespeichert
+            if (response) {
                 Alert.alert("Erfolg", "Die Einstellungen wurden erfolgreich gespeichert.");
             }
         } catch (error) {
@@ -84,7 +85,6 @@ const UserSettings = () => {
     };
 
     const handlePasswordChange = async () => {
-        // Placeholder for password change logic (e.g., redirect to a change password screen)
         Alert.alert("Hinweis", "Diese Funktion zum Ändern des Passworts ist in Arbeit.");
     };
 
@@ -109,49 +109,56 @@ const UserSettings = () => {
                 </View>
 
                 <View style={styles.settingsDataContainerStyle}>
-                    {/* Sprache der App */}
                     <View style={styles.settingsBoxStyle}>
                         <Text style={styles.settingsBoxTextStyle}>Sprache der App</Text>
                         <RNPickerSelect
                             onValueChange={handleLanguageChange}
                             items={[
                                 { label: "Deutsch", value: "de" },
-                                { label: "Englisch", value: "en" },
-                                { label: "Französisch", value: "fr" },
                             ]}
                             value={userSettings.language}
+                            style={{
+                                inputIOS: {
+                                    color: '#FFFFFF',
+                                },
+                                inputAndroid: {
+                                    color: '#FFFFFF',
+                                },
+                                placeholder: {
+                                    color: '#FFFFFF',
+                                },
+                            }}
                         />
                     </View>
 
-                    {/* Benachrichtigungen */}
                     <View style={styles.settingsBoxStyle}>
                         <Text style={styles.settingsBoxTextStyle}>Benachrichtigungen</Text>
                         <Switch
                             value={userSettings.notifications_enabled}
                             onValueChange={handleNotificationsToggle}
                             thumbColor={userSettings.notifications_enabled ? "#16c72e" : "#f4f3f4"}
-                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            trackColor={{ false: "#767577", true: "#16c72e" }}
                         />
                     </View>
 
-                    {/* Links zu Datenschutz und Impressum */}
                     <View style={styles.settingsBoxStyle}>
                         <TouchableOpacity onPress={() => {/* Link zu Datenschutz */}}>
                             <Text style={styles.settingsBoxTextStyle}>Datenschutz</Text>
                         </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.settingsBoxStyle}>
                         <TouchableOpacity onPress={() => {/* Link zu Impressum */}}>
                             <Text style={styles.settingsBoxTextStyle}>Impressum</Text>
                         </TouchableOpacity>
                     </View>
 
-                    {/* Passwort ändern */}
                     <View style={styles.settingsBoxStyle}>
                         <TouchableOpacity onPress={handlePasswordChange}>
                             <Text style={styles.settingsBoxTextStyle}>Passwort ändern</Text>
                         </TouchableOpacity>
                     </View>
 
-                    {/* Konto löschen */}
                     <View style={styles.settingsBoxStyle}>
                         <TouchableOpacity onPress={handleAccountDeletion}>
                             <Text style={[styles.settingsBoxTextStyle, { color: "red" }]}>Konto löschen</Text>
