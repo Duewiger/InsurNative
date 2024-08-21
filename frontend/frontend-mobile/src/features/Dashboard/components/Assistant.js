@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { SafeAreaView, View, Text, TextInput, Image, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as DocumentPicker from 'expo-document-picker';
+import * as DocumentPicker from 'react-native-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import styles from "./Assistant.styles";
@@ -30,6 +30,16 @@ const Assistant = () => {
         }
     }, [typingIndex, response, isTyping]);
 
+    useEffect(() => {
+        (async () => {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Entschuldigung, wir benötigen Kamera-Berechtigungen, um diese Funktion nutzen zu können!');
+            }
+        })();
+    }, []);
+    
+
     const handleFocus = () => {
         setFocusedInput(true);
     };
@@ -39,12 +49,37 @@ const Assistant = () => {
     };
 
     const handleFilePick = async () => {
-        let result = await DocumentPicker.getDocumentAsync({});
-        if (result.type === 'success') {
-            setSelectedFile(result);
+        try {
+            const result = await DocumentPicker.pick({
+                type: [DocumentPicker.types.allFiles],
+            });
+    
+            console.log('Selected file:', result);
+    
+            if (result[0].type.startsWith('image/')) {
+                setSelectedFile({
+                    uri: result[0].uri,
+                    name: result[0].name,
+                    type: result[0].type,
+                });
+            } else if (result[0].type === 'application/pdf') {
+                setSelectedFile({
+                    uri: result[0].uri,
+                    name: result[0].name,
+                    type: result[0].type,
+                });
+            } else {
+                alert('Dieser Dateityp wird nicht unterstützt.');
+            }
+        } catch (error) {
+            if (DocumentPicker.isCancel(error)) {
+                console.log('Auswahl abgebrochen.');
+            } else {
+                console.error('Fehler bei der Dokumentenauswahl:', error);
+            }
         }
     };
-
+    
     const handleTakePhoto = async () => {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -52,14 +87,17 @@ const Assistant = () => {
             aspect: [4, 3],
             quality: 1,
         });
-        if (!result.cancelled) {
+    
+        console.log(result);
+    
+        if (!result.canceled && result.assets && result.assets.length > 0) {
             setSelectedFile({
-                uri: result.uri,
+                uri: result.assets[0].uri,
                 name: `photo-${new Date().getTime()}.jpg`,
                 type: 'image/jpeg',
             });
         }
-    };
+    };    
 
     const handleSend = async () => {
         clearTimeout(typingTimeout.current);
@@ -71,6 +109,8 @@ const Assistant = () => {
 
         let formData = new FormData();
         formData.append('message', message);
+
+        console.log(selectedFile);
 
         if (selectedFile) {
             formData.append('file', {
@@ -105,6 +145,7 @@ const Assistant = () => {
         setDisplayedText('');
         setTypingIndex(0);
         setIsLoading(false);
+        setSelectedFile(null);
     };
 
     return (

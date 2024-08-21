@@ -28,6 +28,7 @@
     "expo-web-browser": "~13.0.3",
     "react": "18.2.0",
     "react-native": "0.74.3",
+    "react-native-document-picker": "^9.3.0",
     "react-native-file-viewer": "^2.1.5",
     "react-native-fs": "^2.20.0",
     "react-native-picker-select": "^9.3.1",

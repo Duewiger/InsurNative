@@ -85,7 +85,7 @@ const Profile = () => {
         } finally {
             setIsUploading(false);
         }
-    };    
+    };
 
     // Funktion zur Bearbeitung des Profilbilds
     const handleProfileImageChange = async () => {
