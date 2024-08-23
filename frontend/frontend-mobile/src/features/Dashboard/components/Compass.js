@@ -1,21 +1,97 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, Image, TextInput, TouchableOpacity, ScrollView, Linking } from 'react-native';
+import { SafeAreaView, View, Text, Image, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from "@react-navigation/native";
 import styles from "./Compass.styles";
+import { editRepresentativeProfileData } from "../../../services/api"; 
+import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Compass = () => {
     const navigation = useNavigation();
+    const [isUploading, setIsUploading] = useState(false);
+    const [emailMessage, setEmailMessage] = useState("");
+    const [isSending, setIsSending] = useState(false);
+    const [representativeProfileData, setRepresentativeProfileData] = useState({
+        name: '',
+        address: '',
+        email: '',
+        // phone: '',
+    });
 
     const handleBackButtonPress = () => {
         navigation.replace('DashboardTabs');
     };
-    
-    const hotline = '+491727452773';
 
-    const handleHotlineCall = () => {
-        const hotlineURL = `tel:${hotline}`;
-        Linking.openURL(hotlineURL);
+    const fetchRepresentativeProfileData = async () => {
+        try {
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            const response = await axios.get('http://192.168.2.130:8000/accounts/api/representative/', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const { phone, ...filteredData } = response.data;
+            setRepresentativeProfileData(filteredData);
+        } catch (error) {
+            console.error("Error fetching profile data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRepresentativeProfileData();
+    }, []);
+
+    const handleChange = (field, value) => {
+        setRepresentativeProfileData((prevData) => ({
+            ...prevData,
+            [field]: value,
+        }));
+    };
+
+    const handleEdit = async () => {
+        setIsUploading(true);
+        try {
+            const data = { ...representativeProfileData };
+            const response = await editRepresentativeProfileData(data);
+            if (response) {
+                alert('Die Daten wurden erfolgreich geändert');
+            }
+        } catch (error) {
+            console.error('Edit failed:', error);
+            Alert.alert('Fehler', 'Die Daten konnten nicht geändert werden.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleSendEmail = async () => {
+        setIsSending(true);
+        try {
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            const response = await axios.post(
+                'http://192.168.2.130:8000/accounts/api/representative/sendmail/',
+                {
+                    message: emailMessage,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                Alert.alert("Erfolg", response.data.message);
+            } else {
+                Alert.alert("Fehler", response.data.error || "E-Mail konnte nicht gesendet werden.");
+            }
+        } catch (error) {
+            console.error('Fehler beim Senden der E-Mail:', error);
+            Alert.alert("Fehler", "Es gab ein Problem beim Senden der E-Mail.");
+        } finally {
+            setIsSending(false);
+        }
     };
 
     return (
@@ -38,38 +114,75 @@ const Compass = () => {
                     <Text style={styles.headerTitleStyle}>Ihr Berater</Text>
                 </View>
                 <View style={styles.compassContainerStyle}>
-                    <Text style={styles.sublineStyle}>Hinterlegen Sie mit Google Maps Ihren Makler, Versicherungsverteter oder Berater. Sie können ihn auch ganz einfach über unsere App kontaktieren.</Text>
-                    <View style={styles.representativeBoxStyle}>
-                        <View style={styles.representativeTextWrapper}>
-                            <Text style={styles.representativeBoxTextStyle}>
-                                Ihr Versicherungsberater
-                            </Text>
-                            <Text style={styles.representativeDataTextStyle}>
-                                Kilian Düwiger {"\n"}
-                                Rissener Dorfstraße 51 {"\n"}
-                                22559 Hamburg {"\n"}
-                                +49 172 745 27 73
-                            </Text>
+                    <Text style={styles.sublineStyle}>Hinterlegen Sie Ihren Makler, Versicherungsverteter oder Berater. Sie können ihn auch ganz einfach über unsere App per Mail kontaktieren.</Text>
+                    <View style={styles.profileDataContainerStyle}>
+                        <View style={styles.representativeBoxStyle}>
+                            <Text style={styles.representativeHeadingStyle}>Ihr Versicherungsberater</Text>
+                            <View style={styles.representativeImageWrapper}>
+                                <Image
+                                    source={require('../../../../assets/images/kd-profile.png')}
+                                    style={styles.representativeImageStyle}
+                                />
+                            </View>
                         </View>
-                        <View style={styles.representativeImageWrapper}>
-                            <Image
-                                source={require('../../../../assets/images/kd-profile.png')}
-                                style={styles.representativeImageStyle}
-                            />
-                        </View>
+                        {[
+                            { label: 'Name', field: 'name' },
+                            { label: 'Anschrift', field: 'address' },
+                            { label: 'E-Mail-Adresse', field: 'email' },
+                            // { label: 'Telefonnummer', field: 'phone' },
+                        ].map((item, index) => (
+                            <View key={index} style={styles.representativeProfileBoxStyle}>
+                                <Text style={styles.representativeProfileBoxTextStyle}>{item.label}</Text>
+                                <TextInput
+                                    style={styles.representativeProfileDataTextStyle}
+                                    value={representativeProfileData[item.field] || ''}
+                                    onChangeText={(value) => handleChange(item.field, value)}
+                                    selectionColor="#16c72e"
+                                />
+                            </View>
+                        ))}
                     </View>
                     <TouchableOpacity
-                    onPress={handleHotlineCall}
-                    style={styles.hotlineButtonStyle}
+                        style={styles.saveButtonStyle}
+                        onPress={handleEdit}
+                        disabled={isUploading}
+                    > 
+                        <Text style={styles.saveButtonTextStyle}>Speichern</Text>
+                    </TouchableOpacity>
+                    {isUploading && (
+                        <ActivityIndicator 
+                            size="large" 
+                            color="#16c72e" 
+                            style={styles.loadingIndicator} 
+                        />
+                    )}
+                    <TextInput
+                        style={styles.compassEmailTextInputStyle}
+                        placeholder="Sende eine Nachricht per Mail an deinen Berater."
+                        placeholderTextColor={"#A5A5A5"}
+                        selectionColor="#16c72e"
+                        multiline={true}
+                        textAlignVertical="top"
+                        value={emailMessage}
+                        onChangeText={setEmailMessage}
+                    >
+                    </TextInput>
+                    <TouchableOpacity
+                        style={styles.emailButtonStyle}
+                        onPress={handleSendEmail}
+                        disabled={isSending}
                     >
                         <Text
-                            style={styles.hotlineButtonTextStyle}
-                        >Versicherungsberater anrufen</Text>
+                            style={styles.emailButtonTextStyle}
+                        >E-Mail Senden</Text>
                     </TouchableOpacity>
-                    <Image
-                        source={require('../../../../assets/images/google-maps-placeholder.png')}
-                        style={styles.googleMapsMapStyle}
-                    />
+                    {isSending && (
+                    <ActivityIndicator 
+                        size="large" 
+                        color="#16c72e" 
+                        style={styles.loadingIndicator} 
+                        />
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
-from .models import CustomUser, Document, Registration, UserSettings
+from .models import CustomUser, Document, Registration, UserSettings, Representative
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -51,3 +51,11 @@ class UserSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSettings
         fields = ['user', 'language', 'notifications_enabled', 'cookies_enabled']
+        read_only_fields = ['user']
+        
+        
+class RepresentativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Representative
+        fields = ['user', 'name', 'address', 'email', 'phone']
+        read_only_fields = ['user']

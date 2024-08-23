@@ -86,6 +86,9 @@ def user_created(sender, instance, created, **kwargs):
 
         # Erstelle automatisch die UserSettings für den neuen Benutzer
         UserSettings.objects.create(user=instance)
+        
+        # Erstelle automatisch das Representative-Objekt
+        Representative.objects.create(user=instance)
     
 
 class UserSettings(models.Model):
@@ -96,3 +99,14 @@ class UserSettings(models.Model):
     
     def __str__(self):
         return f"{self.user.username}'s settings"
+    
+    
+class Representative(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="representative")
+    name = models.CharField(max_length=250, null=True ,blank=True)
+    address = models.CharField(max_length=500, null=True, blank=True)
+    email = models.EmailField(max_length=250, null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.user.first_name, self.user.last_name}'s representative {self.name}"

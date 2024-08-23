@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import DocumentDownloadView, DocumentListView, DocumentSearchView, LoginPageView, LogoutPageView, SignupPageView, AccountPageView, AccountDataEditView, AccountDeleteView, DocumentUploadView, DocumentDeleteView, UserSettingsEditView, UserSettingsView, ForgotPasswordPageView
+from .views import DocumentDownloadView, DocumentListView, DocumentSearchView, LoginPageView, LogoutPageView, RepresentativeEditView, RepresentativeEmailView, RepresentativePageView, SignupPageView, AccountPageView, AccountDataEditView, AccountDeleteView, DocumentUploadView, DocumentDeleteView, UserSettingsEditView, UserSettingsView, ForgotPasswordPageView
+
 
 urlpatterns = [
     path('api/login/', LoginPageView.as_view(), name='login'),
@@ -16,4 +17,7 @@ urlpatterns = [
     path('api/user-settings/', UserSettingsView.as_view(), name='user_settings'),
     path('api/user-settings/edit/', UserSettingsEditView.as_view(), name='user_settings_edit'),
     path('api/forgot-password/', ForgotPasswordPageView.as_view(), name='forgot_password'),
+    path('api/representative/', RepresentativePageView.as_view(), name='user_representative'),
+    path('api/representative/edit/', RepresentativeEditView.as_view(), name='representative_edit'),
+    path('api/representative/sendmail/', RepresentativeEmailView.as_view(), name='representative_sendmail')
 ]

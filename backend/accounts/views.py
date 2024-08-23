@@ -12,9 +12,12 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.http import FileResponse
 from django.db.models import Q
+from django.conf import settings
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
-from .models import CustomUser, Document, UserSettings
-from .serializers import CustomUserSerializer, DocumentSerializer, UserSettingsSerializer
+from .models import CustomUser, Document, UserSettings, Representative
+from .serializers import CustomUserSerializer, DocumentSerializer, RepresentativeSerializer, UserSettingsSerializer
 
 
 class LoginPageView(APIView):
@@ -207,3 +210,65 @@ class UserSettingsEditView(generics.UpdateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class RepresentativePageView(generics.RetrieveAPIView):
+    serializer_class = RepresentativeSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        user = self.request.user
+        Representative.objects.get_or_create(user=user)
+        return user.representative
+    
+    
+class RepresentativeEditView(generics.UpdateAPIView):
+    serializer_class = RepresentativeSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user.representative
+    
+    def update(self, request, *args, **kwargs):
+        user_representative = self.get_object()
+        serializer = self.get_serializer(user_representative, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class RepresentativeEmailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        representative, created = Representative.objects.get_or_create(user=user)
+
+        if not representative.email:
+            return Response({"error": "Kein Vertreter oder keine E-Mail-Adresse vorhanden."}, status=status.HTTP_400_BAD_REQUEST)
+
+        message_content = request.data.get('message')
+        if not message_content:
+            return Response({"error": "Keine Nachricht übermittelt."}, status=status.HTTP_400_BAD_REQUEST)
+
+        message = Mail(
+            from_email='service@kasgo.com',
+            to_emails=representative.email,
+            subject=f'Nachricht von {user.first_name} {user.last_name}',
+            html_content=f'<p>{message_content}</p>'
+        )
+
+        try:
+            sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+            response = sg.send(message)
+            if response.status_code == 202:
+                return Response({"message": "E-Mail erfolgreich gesendet."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Fehler beim Senden der E-Mail."}, status=response.status_code)
+        except Exception as e:
+            error_message = str(e)
+            print(f"SendGrid Fehler: {error_message}")
+            return Response({"error": f"Es gab ein Problem beim Senden der E-Mail: {error_message}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

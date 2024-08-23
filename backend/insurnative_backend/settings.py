@@ -278,3 +278,6 @@ SIMPLE_JWT = {
 
 # OpenAI Integration API
 OPENAI_API_KEY = env("OPENAI_API_KEY")
+
+# Twilio SendGrid Integration API
+SENDGRID_API_KEY = env("SENDGRID_API_KEY")

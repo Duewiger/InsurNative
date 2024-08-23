@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: "column",
         justifyContent: "center",
-        marginVertical: 25,
+        marginVertical: 10,
+        marginBottom: 100,
     },
     sublineStyle: {
         color: '#A5A5A5',
@@ -51,15 +52,34 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 5,
     },
-    representativeBoxTextStyle: {
-        color: '#A5A5A5',
+    representativeHeadingStyle: {
+        fontSize: 16,
         fontFamily: 'Inter-Medium',
-        fontSize: 12,
+        color: '#FFFFFF',
+        padding: 5,
     },
     representativeDataTextStyle: {
         color: '#FFFFFF',
         fontFamily: 'Inter-Medium',
         fontSize: 14,
+    },
+    representativeProfileBoxStyle: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        backgroundColor: '#303030',
+        borderRadius: 10,
+        padding: 10,
+        marginVertical: 5,
+    },
+    representativeProfileBoxTextStyle: {
+        color: '#A5A5A5',
+        fontFamily: 'Inter-Medium',
+        fontSize: 10,
+    },
+    representativeProfileDataTextStyle: {
+        color: '#FFFFFF',
+        fontFamily: 'Inter-Medium',
+        fontSize: 16,
     },
     representativeTextWrapper: {
         flexDirection: "column",
@@ -74,23 +94,45 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#66ee78',
     },
-    hotlineButtonStyle: {
+    saveButtonStyle: {
+        backgroundColor: '#16c72e',
+        justifyContent: 'center',
+        width: '100%',
+        height: 50,
+        borderRadius: 5,
+        marginVertical: 10,
+    },
+    saveButtonTextStyle: {
+        color: '#FFFFFF',
+        textAlign: 'center',
+        fontSize: 16,
+        fontFamily: 'Inter-Medium',
+    },
+    emailButtonStyle: {
         width: '100%',
         borderRadius: 10,
         backgroundColor: '#16c72e',
         padding: 10,
         marginVertical: 10,
     },
-    hotlineButtonTextStyle: {
+    emailButtonTextStyle: {
         fontSize: 16,
         color: '#ffffff',
         textAlign: 'center',
+        fontFamily: 'Inter-Medium',
     },
-    googleMapsMapStyle: {
+    compassEmailTextInputStyle: {
         width: "100%",
-        height: 200,
-        marginVertical: 25,
+        height: 250,
+        marginVertical: 10,
         borderRadius: 10,
+        padding: 25,
+        color: "#000000",
+        fontFamily: 'Inter-Medium',
+        fontSize: 16,
+        backgroundColor: '#F9F9F9',
+        textAlign: 'left',
+        textAlignVertical: 'top',
     },
 });
 

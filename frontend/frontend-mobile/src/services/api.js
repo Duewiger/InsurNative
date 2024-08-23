@@ -169,4 +169,30 @@ export const deleteAccount = async () => {
     }
 };
 
+export const editRepresentativeProfileData = async (data) => {
+    try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        const response = await api.put(
+            'representative/edit/',
+            data,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Server responded with:', error.response.data);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Error setting up the request:', error.message);
+        }
+        throw error;
+    }
+};
+
 export default api;
