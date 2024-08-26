@@ -1,0 +1,24 @@
+FROM python:3.11.7-slim-bullseye
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=0
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /backend
+
+RUN pip install --upgrade pip
+RUN pip cache purge
+COPY ./requirements.txt .
+# Prevent dependency conflicts
+RUN pip install --upgrade --ignore-installed --force-reinstall -r requirements.txt
+
+RUN pip install gunicorn
+
+# Copy project
+COPY . .
+
+# Expose port 8000 for the application
+EXPOSE 8000
+
+# Command to run the application with gunicorn
+CMD ["gunicorn", "insurnative_backend.wsgi:application", "--bind", "0.0.0.0:8000"]

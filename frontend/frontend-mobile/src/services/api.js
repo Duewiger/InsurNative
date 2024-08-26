@@ -8,24 +8,16 @@ const api = axios.create({
     timeout: 5000,
 });
 
-// Login function
 export const login = async (credentials) => {
     try {
         const response = await api.post('login/', credentials);
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        handleApiError(error, 'Login failed');
         throw error;
     }
 };
 
-// Logout function
 export const logout = async (refreshToken) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -40,28 +32,21 @@ export const logout = async (refreshToken) => {
         );
         return response.data;
     } catch (error) {
+        handleApiError(error, 'Logout failed');
         throw error;
     }
 };
 
-// SignUp function
 export const signup = async (values) => {
     try {
         const response = await api.post('signup/', values);
-        return response.data
+        return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        handleApiError(error, 'Signup failed');
         throw error;
     }
 };
 
-// Edit profile text data function
 export const editProfileData = async (data) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -77,18 +62,11 @@ export const editProfileData = async (data) => {
         );
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        handleApiError(error, 'Profile update failed');
         throw error;
     }
 };
 
-// Edit profile image function
 export const editProfileImage = async (imageUri) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -101,7 +79,7 @@ export const editProfileImage = async (imageUri) => {
 
         const response = await api.put(
             'account/edit/',
-            formData, // FormData für das Bild
+            formData,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -111,18 +89,11 @@ export const editProfileImage = async (imageUri) => {
         );
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        handleApiError(error, 'Profile image update failed');
         throw error;
     }
 };
 
-// Fetch user-settings function
 export const fetchUserSettings = async () => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -133,7 +104,7 @@ export const fetchUserSettings = async () => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error fetching user settings:', error);
+        handleApiError(error, 'Fetching user settings failed');
         throw error;
     }
 };
@@ -149,7 +120,7 @@ export const editUserSettings = async (settings) => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error saving user settings:', error);
+        handleApiError(error, 'Saving user settings failed');
         throw error;
     }
 };
@@ -164,7 +135,7 @@ export const deleteAccount = async () => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error deleting account:', error);
+        handleApiError(error, 'Account deletion failed');
         throw error;
     }
 };
@@ -184,14 +155,18 @@ export const editRepresentativeProfileData = async (data) => {
         );
         return response.data;
     } catch (error) {
-        if (error.response) {
-            console.error('Server responded with:', error.response.data);
-        } else if (error.request) {
-            console.error('No response received:', error.request);
-        } else {
-            console.error('Error setting up the request:', error.message);
-        }
+        handleApiError(error, 'Representative profile update failed');
         throw error;
+    }
+};
+
+const handleApiError = (error, message) => {
+    if (error.response) {
+        console.error(`${message}:`, error.response.data);
+    } else if (error.request) {
+        console.error(`${message}: No response received`, error.request);
+    } else {
+        console.error(`${message}:`, error.message);
     }
 };
 

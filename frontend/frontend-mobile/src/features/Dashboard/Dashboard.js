@@ -13,7 +13,7 @@ const Dashboard = () => {
     const navigation = useNavigation();
     const [focusedInput, setFocusedInput] = useState(null);
     const [documents, setDocuments] = useState([]);
-    const [searchQuery, setSearchQuery] = useState(""); // Suchbegriff
+    const [searchQuery, setSearchQuery] = useState("");
     const [isUploading, setIsUploading] = useState(false);
 
     const fetchDocuments = async (query = "") => {
@@ -24,7 +24,7 @@ const Dashboard = () => {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    q: query, // Übergibt den Suchbegriff an die API
+                    q: query,
                 },
             });
             setDocuments(response.data);
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
     const handleSearchChange = (query) => {
         setSearchQuery(query);
-        fetchDocuments(query); // Führt eine neue Suche aus, sobald der Suchbegriff geändert wird
+        fetchDocuments(query);
     };
 
     const openProfile = () => {
@@ -118,7 +118,7 @@ const Dashboard = () => {
     
                 if (response.status === 201) {
                     alert('Dokument erfolgreich hochgeladen.');
-                    fetchDocuments(); // Aktualisiere die Dokumentenliste
+                    fetchDocuments();
                 }
             }
         } catch (error) {
@@ -193,8 +193,8 @@ const Dashboard = () => {
                             placeholderTextColor="#D9D9D9"
                             selectionColor="#16c72e"
                             underlineColorAndroid="transparent"
-                            value={searchQuery} // Suchbegriff anzeigen
-                            onChangeText={handleSearchChange} // Suchbegriff ändern
+                            value={searchQuery}
+                            onChangeText={handleSearchChange}
                         />
                     </View>
                 </View>
@@ -209,7 +209,7 @@ const Dashboard = () => {
                         <TouchableOpacity
                             style={styles.uploadButtonStyle}
                             onPress={uploadDocument}
-                            disabled={isUploading} // Deaktiviere den Button während des Uploads
+                            disabled={isUploading}
                         >
                             <Text style={styles.uploadButtonTextStyle}>Dokument hochladen</Text>
                         </TouchableOpacity>
@@ -217,7 +217,7 @@ const Dashboard = () => {
                             <ActivityIndicator 
                                 size="large" 
                                 color="#16c72e" 
-                                style={styles.loadingIndicator} // Optional: zusätzlicher Style
+                                style={styles.loadingIndicator}
                             />
                         )}
                     </View>

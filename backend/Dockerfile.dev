@@ -1,0 +1,29 @@
+# Dockerfile.dev
+
+FROM python:3.11.7-slim-bullseye
+
+# Set environment variables
+ENV PIP_DISABLE_PIP_VERSION_CHECK=0
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory
+WORKDIR /backend
+
+# Install dependencies
+RUN pip install --upgrade pip
+RUN pip cache purge
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+
+# Install development dependencies (z.B. Werkzeug für Debugging, falls benötigt)
+RUN pip install django-debug-toolbar
+
+# Copy project
+COPY . .
+
+# Expose port 8000 for the application
+EXPOSE 8000
+
+# Command to run the application (Django development server)
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

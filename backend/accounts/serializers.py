@@ -17,8 +17,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'first_name': {'required': True},
             'last_name': {'required': True},
             'email': {'required': True},
-            'profile_picture': {'required': False, 'allow_null': True}  # Profilbild ist optional
+            'profile_picture': {'required': False, 'allow_null': True}
         }
+        
+    def create(self, validated_data):
+        password = validated_data.get('password')
+        if password:
+            validated_data['password'] = make_password(password)
+        
+        user = CustomUser.objects.create(**validated_data)
+        return user
 
     def update(self, instance, validated_data):
         password = validated_data.get('password', None)
@@ -27,7 +35,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
         else:
             validated_data.pop('password', None)
 
-        # Entferne das profile_picture-Feld, wenn es leer ist oder None ist
         if 'profile_picture' in validated_data and validated_data['profile_picture'] in [None, '', 'null']:
             validated_data.pop('profile_picture', None)
 

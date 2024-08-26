@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, View, Text, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./Profile.styles";
-import { logout, editProfileData, editProfileImage } from "../../../services/api"; // Angepasste Funktionen importieren
+import { logout, editProfileData, editProfileImage } from "../../../services/api";
 import * as ImagePicker from "expo-image-picker";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -66,15 +66,13 @@ const Profile = () => {
         }
     };
 
-    // Funktion zur Bearbeitung der Textdaten
     const handleEdit = async () => {
         setIsUploading(true);
         try {
-            // Erstelle ein JSON-Objekt ohne das 'profile_picture'-Feld
             const data = { ...profileData };
-            delete data.profile_picture; // Entferne das 'profile_picture'-Feld aus den zu sendenden Daten
+            delete data.profile_picture;
     
-            const response = await editProfileData(data); // JSON-Daten senden
+            const response = await editProfileData(data); 
             if (response) {
                 alert('Die Daten wurden erfolgreich geändert');
             }
@@ -86,7 +84,6 @@ const Profile = () => {
         }
     };
 
-    // Funktion zur Bearbeitung des Profilbilds
     const handleProfileImageChange = async () => {
         try {
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -107,7 +104,6 @@ const Profile = () => {
                 const newProfileImage = pickerResult.assets[0].uri;
                 setProfileImage(newProfileImage);
 
-                // Speichere das Profilbild separat
                 const response = await editProfileImage(newProfileImage);
                 if (response) {
                     alert('Das Profilbild wurde erfolgreich geändert');
@@ -191,7 +187,7 @@ const Profile = () => {
                 </View>
                 <TouchableOpacity
                     style={styles.saveButtonStyle}
-                    onPress={handleEdit} // Nur textuelle Felder speichern
+                    onPress={handleEdit}
                     disabled={isUploading}
                 >
                     <Text style={styles.saveButtonTextStyle}>Speichern</Text>

@@ -30,20 +30,18 @@ class AssistantAPIView(APIView):
         extracted_text = None
         file_path = None
 
-        # Datei temporär speichern und in Base64 codieren, falls vorhanden
+        # Save file temporarily and encode in Base64 if available
         if 'file' in request.FILES:
             uploaded_file = request.FILES['file']
             file_path = default_storage.save(uploaded_file.name, uploaded_file)
             full_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
-            # Überprüfe den Dateityp
             if uploaded_file.name.endswith('.pdf'):
-                # Extrahiere Text aus dem PDF
                 with open(full_file_path, 'rb') as file:
                     reader = PyPDF2.PdfReader(file)
                     extracted_text = " ".join([page.extract_text() for page in reader.pages])
             else:
-                # Bild in Base64 codieren
+                # encode the image
                 with open(full_file_path, "rb") as file:
                     encoded_image = base64.b64encode(file.read()).decode('utf-8')
 
@@ -51,7 +49,7 @@ class AssistantAPIView(APIView):
             openai.api_key = settings.OPENAI_API_KEY
             print("API Key und Konfiguration gesetzt.")
 
-            # Erstelle die Nachrichtenliste mit dem bisherigen Verlauf
+            # Previouse Chat Interactions of the user with ChatGPT
             previous_interactions = AssistantInteraction.objects.filter(user=user).order_by('-timestamp')[:10][::-1]
             messages = [{"role": "system", "content": "You are a specialized insurance assistant. Your role is to advise customers on insurance-related queries, translating documents and messages related to insurance matters."}]
 
@@ -59,10 +57,8 @@ class AssistantAPIView(APIView):
                 messages.append({"role": "user", "content": interaction.message})
                 messages.append({"role": "assistant", "content": interaction.response})
 
-            # Initialisiere user_input
             user_input = {"role": "user", "content": [{"type": "text", "text": user_message}]}
 
-            # Ansonsten füge den Inhalt für Bilder oder PDF-Text hinzu
             if encoded_image:
                 user_input["content"].append({
                     "type": "image_url",
@@ -73,33 +69,30 @@ class AssistantAPIView(APIView):
 
             messages.append(user_input)
 
-            # GPT-4 API-Aufruf mit Vision-Funktionalität
+            # 4o-mini with computer-vision || OCR better in future due to text?
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
                 max_tokens=300,
             )
             
-            # Extrahiere die Antwort
             gpt_response = response.choices[0].message.content.strip()
 
-            # Generiere eine PDF mit der Antwort und speichere sie im zentralen "user_files"-Ordner
+            # generate a pdf for the user of gpt_respone
             pdf_filename = os.path.join(settings.MEDIA_ROOT, 'user_files', f"translated_document_{uuid.uuid4()}.pdf")
             create_translated_pdf_document(gpt_response, pdf_filename)
             
             print(f"Länge des Dateipfads: {len(pdf_filename)} Zeichen")
             
-            # Speichere das Dokument in der Datenbank und verknüpfe es mit dem Benutzer
             document_instance = Document.objects.create(
                 user=user,
                 file=pdf_filename
             )
 
-            # Lösche die hochgeladene Datei nach Verarbeitung
             if file_path:
                 default_storage.delete(file_path)
 
-            # Speichere die aktuelle Interaktion
+            # save interaction in db
             interaction = AssistantInteraction.objects.create(
                 user=user,
                 message=user_message,

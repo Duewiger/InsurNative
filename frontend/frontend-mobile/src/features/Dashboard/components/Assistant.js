@@ -142,7 +142,7 @@ const Assistant = () => {
                         )}
                     </ScrollView>
 
-                    {/* Vorschau für das angehängte Bild */}
+                    {/* Preview for the attached image */}
                     {selectedFile && (
                         <View style={styles.imagePreviewContainer}>
                             <Image source={{ uri: selectedFile.uri }} style={styles.imagePreview} />

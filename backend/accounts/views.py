@@ -38,6 +38,7 @@ class LoginPageView(APIView):
 
 
 class LogoutPageView(APIView):
+    serializer_class = CustomUserSerializer # or = None -> not used
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
@@ -56,6 +57,7 @@ class LogoutPageView(APIView):
         
 
 class ForgotPasswordPageView(APIView):
+    serializer_class = CustomUserSerializer # or = None -> not used
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         user = CustomUser.objects.filter(email=email).first()
@@ -73,6 +75,7 @@ class ForgotPasswordPageView(APIView):
         
         
 class SignupPageView(APIView):
+    serializer_class = CustomUserSerializer # or = None -> not used
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
@@ -123,7 +126,7 @@ class AccountDeleteView(generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
         user.delete()
-        return Response({"detail": "Ihr Konto wurde erfolgreich gelöscht."}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class DocumentListView(generics.ListAPIView):
@@ -144,6 +147,7 @@ class DocumentUploadView(generics.CreateAPIView):
         
 
 class DocumentDownloadView(generics.RetrieveAPIView):
+    serializer_class = DocumentSerializer # or = None -> not used
     permission_classes = [IsAuthenticated]
     # lookup_field = 'id'
 
@@ -164,7 +168,6 @@ class DocumentDeleteView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        # Präzisere Fehlerbehandlung bei der Abfrage
         return get_object_or_404(Document, id=self.kwargs['pk'], user=self.request.user)
     
 
@@ -188,7 +191,6 @@ class UserSettingsView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        # Erstellt die UserSettings, falls sie nicht existieren
         user = self.request.user
         UserSettings.objects.get_or_create(user=user)
         return user.settings
@@ -241,6 +243,7 @@ class RepresentativeEditView(generics.UpdateAPIView):
     
 
 class RepresentativeEmailView(APIView):
+    serializer_class = RepresentativeSerializer # or None -> not used
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):

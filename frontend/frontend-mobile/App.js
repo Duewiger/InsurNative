@@ -8,7 +8,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { store } from './src/store/index.js';
 
-// Importiere deine Screens
 import StartUp from './src/features/StartUp/StartUp';
 import Highlights from './src/features/Highlights/Highlights';
 import CookieBanner from './src/features/CookieBanner/CookieBanner';
@@ -22,10 +21,11 @@ import Profile from './src/features/Dashboard/components/Profile';
 import UserSettings from './src/features/Dashboard/components/UserSettings';
 import CustomButton from './src/components/CustomButton';
 
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Funktion zum Laden der Fonts
+
 const loadFonts = () => {
   return Font.loadAsync({
     'Inter-Black': require('./assets/fonts/Inter-Black.ttf'),
@@ -40,12 +40,13 @@ const loadFonts = () => {
   });
 };
 
+
 const DashboardTabs = ({ navigation }) => {
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: styles.tabBarStyle,
-        tabBarShowLabel: false,  // Entfernt Standard-Titel der Tabs
+        tabBarShowLabel: false,
       }}
     >
       <Tab.Screen
@@ -115,33 +116,32 @@ const DashboardTabs = ({ navigation }) => {
   );
 };
 
-// Verhindere, dass der SplashScreen automatisch verschwindet
+
 SplashScreen.preventAutoHideAsync();
+
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
+    async function loadResourcesAndData() {
       try {
-        // Warten, bis die Fonts geladen sind
         await loadFonts();
       } catch (e) {
         console.warn(e);
       } finally {
-        // SplashScreen ausblenden, wenn die Fonts geladen sind
         setFontsLoaded(true);
         await SplashScreen.hideAsync();
       }
     }
 
-    prepare();
+    loadResourcesAndData();
   }, []);
 
   if (!fontsLoaded) {
-    // Das SplashScreen bleibt, bis die Fonts geladen sind und `hideAsync` aufgerufen wird
     return null;
   }
+
 
   return (
     <Provider store={store}>
@@ -198,6 +198,7 @@ export default function App() {
   );
 }
 
+
 const styles = StyleSheet.create({
   tabBarStyle: {
     height: 75,
@@ -207,8 +208,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     borderTopWidth: 0,
-    elevation: 0, // Entfernt Schatten auf Android
-    shadowOpacity: 0, // Entfernt Schatten auf iOS
+    elevation: 0,
+    shadowOpacity: 0,
   },
   tabBarMainButtonTextStyle: {
     color: '#FFFFFF',

@@ -67,27 +67,23 @@ class Registration(models.Model):
     customer_registration = models.TextField(default='{}')
     registration_date = models.DateTimeField(default=timezone.now)
     
-# Django Signals zum automatischen Setzen der Permissions bei User Creation
+    
 @receiver(post_save, sender=CustomUser)
 def user_created(sender, instance, created, **kwargs):
     if created:
-        # Erstelle die Registrierungsdaten
         data = {
             'id': str(instance.id),
             'first_name': instance.first_name,
             'last_name': instance.last_name
         }
 
-        # Erstelle und speichere den Registrierungseintrag
         Registration.objects.create(
             user=instance,
             customer_registration=json.dumps(data)
         )
 
-        # Erstelle automatisch die UserSettings für den neuen Benutzer
         UserSettings.objects.create(user=instance)
         
-        # Erstelle automatisch das Representative-Objekt
         Representative.objects.create(user=instance)
     
 

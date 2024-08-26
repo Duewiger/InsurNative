@@ -1,0 +1,25 @@
+# Python
+*.pyc
+__pycache__/
+
+# Django
+*.log
+*.sqlite3
+db.sqlite3
+
+# Virtualenv
+venv/
+.env
+
+# Static / Media
+staticfiles/
+media/
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.swp
+
+# Node.js (falls im frontend benötigt)
+node_modules/
+dist/

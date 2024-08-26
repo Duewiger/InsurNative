@@ -17,9 +17,9 @@ const UserSettings = () => {
     const loadUserSettings = async () => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await fetchUserSettings(); // Die API zum Abrufen der Benutzereinstellungen wird aufgerufen
+            const response = await fetchUserSettings();
             if (response) {
-                setUserSettings(response); // Die Benutzereinstellungen werden im State gesetzt
+                setUserSettings(response);
             }
         } catch (error) {
             console.error("Error fetching user settings:", error);
@@ -52,7 +52,7 @@ const UserSettings = () => {
     const handleSaveSettings = async () => {
         setIsSubmitting(true);
         try {
-            const response = await editUserSettings(userSettings); // Die geänderten Einstellungen werden gespeichert
+            const response = await editUserSettings(userSettings);
             if (response) {
                 Alert.alert("Erfolg", "Die Einstellungen wurden erfolgreich gespeichert.");
             }
@@ -70,16 +70,20 @@ const UserSettings = () => {
             "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
             [
                 { text: "Abbrechen", style: "cancel" },
-                { text: "Löschen", onPress: async () => {
-                    try {
-                        await deleteAccount();
-                        await AsyncStorage.clear();
-                        navigation.replace("Login");
-                    } catch (error) {
-                        console.error("Failed to delete account:", error);
-                        Alert.alert("Fehler", "Das Konto konnte nicht gelöscht werden.");
+                { 
+                    text: "Löschen", 
+                    onPress: async () => {
+                        try {
+                            await deleteAccount();
+                            await AsyncStorage.clear();
+                            navigation.replace("Login");
+                            Alert.alert("Das Konto wurde erfolgreich gelöscht.");
+                        } catch (error) {
+                            console.error("Failed to delete account:", error);
+                            Alert.alert("Fehler", "Das Konto konnte nicht gelöscht werden.");
+                        }
                     }
-                }},
+                }
             ]
         );
     };
