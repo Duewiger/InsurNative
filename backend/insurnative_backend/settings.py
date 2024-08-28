@@ -47,8 +47,9 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_framework",
     "rest_framework.authtoken",
-    'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    "storages",
     # Local
     "accounts.apps.AccountsConfig",
     "assistant.apps.AssistantConfig",
@@ -104,7 +105,6 @@ DATABASES = {
         "NAME": env("DATABASE_NAME"),
         "USER": env("DATABASE_USER"),
         "PASSWORD": env("DATABASE_PASSWORD"),
-        # HOST="database-1.xxxxxxxxxxxx.region.rds.amazonaws.com"
         "HOST": env("DATABASE_HOST"),
         "PORT": env("DATABASE_PORT", default="5432"),
     }
@@ -134,17 +134,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
-
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 
 CORS_ORIGIN_ALLOW_ALL = False
@@ -249,3 +238,18 @@ OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 
 SENDGRID_API_KEY = env("SENDGRID_API_KEY")
+
+
+# AWS S3 settings
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = "eu-central-1"
+
+# Static Files via S3
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
+
+# Media Files via S3
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"

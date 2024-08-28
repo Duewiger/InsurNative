@@ -2,11 +2,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+
+def health_check(request):
+    return HttpResponse("OK")
 
 urlpatterns = [
     path("insuradmin/", admin.site.urls),
@@ -19,6 +23,8 @@ urlpatterns = [
     # Local apps
     path("accounts/", include("accounts.urls")),
     path("assistant/", include("assistant.urls")),
+    # AWS Health-Check
+    path('', health_check),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
