@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SafeAreaView, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Link } from "@react-navigation/native";
 import styles from "./SignUp.styles";
 import SliderSmall from '../../components/SliderSmall';
@@ -33,6 +33,7 @@ const SignUp = () => {
             const data = await signup(values);
             if (data) {
                 navigation.replace('Login');
+                Alert.alert('Registrierung abgeschlossen', 'Sie haben sich erfolgreich registriert.');
             } else {
                 Alert.alert('Registrierung fehlgeschlagen');
             }

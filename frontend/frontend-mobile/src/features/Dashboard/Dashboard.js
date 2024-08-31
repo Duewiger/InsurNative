@@ -19,7 +19,7 @@ const Dashboard = () => {
     const fetchDocuments = async (query = "") => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await axios.get('http://192.168.2.130:8000/accounts/api/document/search/', {
+            const response = await axios.get('https://www.duewiger-projects.com/accounts/api/document/search/', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -63,7 +63,7 @@ const Dashboard = () => {
             const accessToken = await AsyncStorage.getItem('accessToken');
             const downloadPath = `${FileSystem.documentDirectory}${document.file.split('/').pop()}`;
     
-            const response = await axios.get(`http://192.168.2.130:8000/accounts/api/document/download/${document.id}/`, {
+            const response = await axios.get(`https://www.duewiger-projects.com/accounts/api/document/download/${document.id}/`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -109,7 +109,7 @@ const Dashboard = () => {
     
                 const accessToken = await AsyncStorage.getItem('accessToken');
     
-                const response = await axios.post('http://192.168.2.130:8000/accounts/api/document/upload/', formData, {
+                const response = await axios.post('https://www.duewiger-projects.com/accounts/api/document/upload/', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${accessToken}`,
@@ -144,7 +144,7 @@ const Dashboard = () => {
                         try {
                             const accessToken = await AsyncStorage.getItem('accessToken');
         
-                            const response = await axios.delete(`http://192.168.2.130:8000/accounts/api/document/delete/${documentId}/`, {
+                            const response = await axios.delete(`https://www.duewiger-projects.com/accounts/api/document/delete/${documentId}/`, {
                                 headers: {
                                     Authorization: `Bearer ${accessToken}`,
                                 },

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from environs import Env
 from datetime import timedelta
@@ -24,7 +25,15 @@ DJANGO_SESSION_COOKIE_SECURE = env("DJANGO_SESSION_COOKIE_SECURE")
 DJANGO_CSRF_COOKIE_SECURE = env("DJANGO_CSRF_COOKIE_SECURE")
 
 
-ALLOWED_HOSTS = ["www.duewiger-projects.com", "duewiger-projects.com", "www.duewiger.com", "duewiger.com"]
+# include possible subdomains via (".") as well
+ALLOWED_HOSTS = [
+    ".duewiger-projects.com",
+    ".duewiger.com",
+    "duewiger-projects.com",
+    "duewiger.com",
+    "*",
+]
+
 
 
 INSTALLED_APPS = [
@@ -142,12 +151,16 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://www.duewiger-projects.com",
+    "https://duewiger-projects.com",
     "https://www.duewiger.com",
+    "https://duewiger.com",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "https://www.duewiger-projects.com",
+    "https://duewiger-projects.com",
     "https://www.duewiger.com",
+    "https://duewiger.com",
 ]
 
 
@@ -245,6 +258,7 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = "eu-central-1"
+AWS_LOCATION = 'media'
 
 # Static Files via S3
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
@@ -253,3 +267,4 @@ STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
 # Media Files via S3
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

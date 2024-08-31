@@ -87,7 +87,7 @@ const Assistant = () => {
 
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await axios.post('http://192.168.2.130:8000/assistant/upload/', formData, {
+            const response = await axios.post('https://www.duewiger-projects.com/assistant/upload/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${accessToken}`,

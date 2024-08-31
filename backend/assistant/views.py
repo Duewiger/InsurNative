@@ -34,15 +34,14 @@ class AssistantAPIView(APIView):
         if 'file' in request.FILES:
             uploaded_file = request.FILES['file']
             file_path = default_storage.save(uploaded_file.name, uploaded_file)
-            full_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
             if uploaded_file.name.endswith('.pdf'):
-                with open(full_file_path, 'rb') as file:
+                with open(file_path, 'rb') as file:
                     reader = PyPDF2.PdfReader(file)
                     extracted_text = " ".join([page.extract_text() for page in reader.pages])
             else:
                 # encode the image
-                with open(full_file_path, "rb") as file:
+                with open(file_path, "rb") as file:
                     encoded_image = base64.b64encode(file.read()).decode('utf-8')
 
         try:

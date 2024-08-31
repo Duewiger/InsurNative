@@ -14,8 +14,8 @@ class CustomUser(AbstractUser):
     # Additional to default -> email set to keep it unique
     email = models.EmailField(unique=True)
     # username set to False and changed to mail to avoid double-key existing
-    username = models.CharField(max_length=150, unique=False)
-    USERNAME_FIELD = 'email'
+    username = models.CharField(max_length=150, unique=False, blank=True)
+    
     REQUIRED_FIELDS = ['first_name', 'last_name']
     ### Customers ###
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -28,7 +28,7 @@ class CustomUser(AbstractUser):
     city = models.CharField(max_length=100, null=True, blank=True)
     postal_code = models.CharField(max_length=20, null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-    profile_picture = models.ImageField(upload_to="profile_pictures", null=True, blank=True)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
     
     groups = models.ManyToManyField(
         'auth.Group',
@@ -59,7 +59,7 @@ class CustomUser(AbstractUser):
 class Document(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    file = models.FileField(upload_to="user_files", max_length=500)
+    file = models.FileField(upload_to="user_files/", max_length=500)
     
     
 class Registration(models.Model):

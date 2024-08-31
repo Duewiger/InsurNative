@@ -25,7 +25,7 @@ const Profile = () => {
     const fetchProfileData = async () => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await axios.get('http://192.168.2.130:8000/accounts/api/account/', {
+            const response = await axios.get('https://www.duewiger-projects.com/accounts/api/account/', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },

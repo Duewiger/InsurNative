@@ -25,7 +25,7 @@ const Compass = () => {
     const fetchRepresentativeProfileData = async () => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            const response = await axios.get('http://192.168.2.130:8000/accounts/api/representative/', {
+            const response = await axios.get('https://www.duewiger-projects.com/accounts/api/representative/', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -69,7 +69,7 @@ const Compass = () => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
             const response = await axios.post(
-                'http://192.168.2.130:8000/accounts/api/representative/sendmail/',
+                'https://www.duewiger-projects.com/accounts/api/representative/sendmail/',
                 {
                     message: emailMessage,
                 },

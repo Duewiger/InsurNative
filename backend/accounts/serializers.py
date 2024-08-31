@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-
 from .models import CustomUser, Document, Registration, UserSettings, Representative
-
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,10 +40,18 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Document
-        fields = ['id', 'user', 'file']
+        fields = ['id', 'user', 'file', 'file_url']
         read_only_fields = ['user']
+
+    def get_file_url(self, obj):
+        request = self.context.get('request')
+        if obj.file and request:
+            return request.build_absolute_uri(obj.file.url)
+        return None
         
         
 class RegistrationSerializer(serializers.ModelSerializer):

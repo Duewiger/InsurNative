@@ -15,10 +15,12 @@ from django.db.models import Q
 from django.conf import settings
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+import logging
 
 from .models import CustomUser, Document, UserSettings, Representative
 from .serializers import CustomUserSerializer, DocumentSerializer, RepresentativeSerializer, UserSettingsSerializer
 
+logger = logging.getLogger(__name__)
 
 class LoginPageView(APIView):
     permission_classes = [AllowAny]
@@ -38,26 +40,25 @@ class LoginPageView(APIView):
 
 
 class LogoutPageView(APIView):
-    serializer_class = CustomUserSerializer # or = None -> not used
+    serializer_class = CustomUserSerializer
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
-        print(f"Authorization Header: {request.headers.get('Authorization')}")
         refresh_token = request.data.get("refresh_token")
         if not refresh_token:
             return Response({"error": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
-        print(f"Received Refresh Token: {refresh_token}")
         try:
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response({"message": "Logout erfolgreich"}, status=status.HTTP_200_OK) 
         except Exception as e:
-            print(f"Logout error: {str(e)}")
+            logger.error(f"Logout error: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
 class ForgotPasswordPageView(APIView):
-    serializer_class = CustomUserSerializer # or = None -> not used
+    serializer_class = CustomUserSerializer
+    
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         user = CustomUser.objects.filter(email=email).first()
@@ -75,7 +76,7 @@ class ForgotPasswordPageView(APIView):
         
         
 class SignupPageView(APIView):
-    serializer_class = CustomUserSerializer # or = None -> not used
+    serializer_class = CustomUserSerializer
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
@@ -106,8 +107,6 @@ class AccountDataEditView(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         user = self.get_object()
         serializer = self.get_serializer(user, data=request.data, partial=True)
-        
-        print(self.request.data)
         
         if serializer.is_valid():
             serializer.save()
@@ -142,25 +141,35 @@ class DocumentUploadView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        print("User:", self.request.user)
-        serializer.save(user=self.request.user)
+        try:
+            serializer.save(user=self.request.user)
+        except Exception as e:
+            logger.error(f"Error during document upload: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
 class DocumentDownloadView(generics.RetrieveAPIView):
-    serializer_class = DocumentSerializer # or = None -> not used
+    serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticated]
-    # lookup_field = 'id'
 
     def get_queryset(self):
         return Document.objects.filter(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
         document = self.get_object()
-        if not document.file or not document.file.path:
+
+        if not document.file or not document.file.url:
             return Response({"error": "Datei nicht gefunden"}, status=status.HTTP_404_NOT_FOUND)
-        response = FileResponse(document.file.open(), content_type='application/octet-stream')
-        response['Content-Disposition'] = f'attachment; filename="{document.file.name.split("/")[-1]}"'
-        return response
+
+        try:
+            file_url = document.file.url
+            logger.info(f"Download URL: {file_url}")
+            response = FileResponse(document.file.open(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{document.file.name.split('/')[-1]}"'
+            return response
+        except Exception as e:
+            logger.error(f"Fehler beim Öffnen der Datei: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DocumentDeleteView(generics.DestroyAPIView):
@@ -169,6 +178,16 @@ class DocumentDeleteView(generics.DestroyAPIView):
 
     def get_object(self):
         return get_object_or_404(Document, id=self.kwargs['pk'], user=self.request.user)
+    
+    def delete(self, request, *args, **kwargs):
+        try:
+            document = self.get_object()
+            document.delete()
+            logger.info(f"Document {document.id} successfully deleted.")
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            logger.error(f"Error deleting document: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 class DocumentSearchView(generics.ListAPIView):
@@ -184,6 +203,15 @@ class DocumentSearchView(generics.ListAPIView):
                 (Q(file__icontains=query) | Q(id__icontains=query))
             )
         return Document.objects.filter(user=user.id)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error fetching documents: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
 class UserSettingsView(generics.RetrieveUpdateAPIView):
@@ -243,7 +271,7 @@ class RepresentativeEditView(generics.UpdateAPIView):
     
 
 class RepresentativeEmailView(APIView):
-    serializer_class = RepresentativeSerializer # or None -> not used
+    serializer_class = RepresentativeSerializer
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -272,6 +300,5 @@ class RepresentativeEmailView(APIView):
             else:
                 return Response({"error": "Fehler beim Senden der E-Mail."}, status=response.status_code)
         except Exception as e:
-            error_message = str(e)
-            print(f"SendGrid Fehler: {error_message}")
-            return Response({"error": f"Es gab ein Problem beim Senden der E-Mail: {error_message}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"SendGrid Fehler: {str(e)}")
+            return Response({"error": f"Es gab ein Problem beim Senden der E-Mail: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
