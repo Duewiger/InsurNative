@@ -133,7 +133,49 @@ class DocumentListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Document.objects.filter(user=self.request.user)
+        user = self.request.user
+        try:
+            # Füge hier ein Debug-Logging hinzu, um zu sehen, welche Dokumente abgerufen werden
+            queryset = Document.objects.filter(user=user)
+            # Debug-Logging: Anzahl der Dokumente und erste paar Dokumente im Log ausgeben
+            logger.debug(f"User {user.id} is fetching documents. Total documents: {queryset.count()}")
+            for doc in queryset[:5]:  # Beispiel: Log die ersten 5 Dokumente
+                logger.debug(f"Document ID: {doc.id}, File: {doc.file.name}")
+            return queryset
+        except Exception as e:
+            logger.error(f"Error fetching documents for user {user.id}: {str(e)}")
+            return Document.objects.none()
+
+class DocumentSearchView(generics.ListAPIView):
+    serializer_class = DocumentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        query = self.request.query_params.get('q', None)
+        try:
+            if query:
+                # Verwende ein Debug-Logging, um die Suchanfrage und Ergebnisse zu überprüfen
+                queryset = Document.objects.filter(
+                    Q(user=user) &
+                    (Q(file__icontains=query) | Q(id__icontains=query))
+                )
+                logger.info(f"Search query '{query}' for user {user.id}: {queryset.count()} results")
+            else:
+                queryset = Document.objects.filter(user=user)
+            return queryset
+        except Exception as e:
+            logger.error(f"Error searching documents for user {user.id}: {str(e)}")
+            return Document.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error listing documents for user {request.user.id}: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DocumentUploadView(generics.CreateAPIView):
@@ -165,7 +207,7 @@ class DocumentDownloadView(generics.RetrieveAPIView):
             file_url = document.file.url
             logger.info(f"Download URL: {file_url}")
             response = FileResponse(document.file.open(), content_type='application/octet-stream')
-            response['Content-Disposition'] = f'attachment; filename="{document.file.name.split('/')[-1]}"'
+            response['Content-Disposition'] = f'attachment; filename="{document.file.name.split("/")[-1]}"'
             return response
         except Exception as e:
             logger.error(f"Fehler beim Öffnen der Datei: {str(e)}")
@@ -187,30 +229,6 @@ class DocumentDeleteView(generics.DestroyAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             logger.error(f"Error deleting document: {str(e)}")
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-
-class DocumentSearchView(generics.ListAPIView):
-    serializer_class = DocumentSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        query = self.request.query_params.get('q', None)
-        if query:
-            return Document.objects.filter(
-                Q(user=user) &
-                (Q(file__icontains=query) | Q(id__icontains=query))
-            )
-        return Document.objects.filter(user=user.id)
-
-    def list(self, request, *args, **kwargs):
-        try:
-            queryset = self.get_queryset()
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-        except Exception as e:
-            logger.error(f"Error fetching documents: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         

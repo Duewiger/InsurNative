@@ -16,7 +16,6 @@ from .serializers import AssistantInteractionSerializer
 from scripts.pdf_creator import create_translated_pdf_document
 from accounts.models import Document
 
-
 client = openai.OpenAI()
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -48,7 +47,7 @@ class AssistantAPIView(APIView):
             openai.api_key = settings.OPENAI_API_KEY
             print("API Key und Konfiguration gesetzt.")
 
-            # Previouse Chat Interactions of the user with ChatGPT
+            # Previous Chat Interactions of the user with ChatGPT
             previous_interactions = AssistantInteraction.objects.filter(user=user).order_by('-timestamp')[:10][::-1]
             messages = [{"role": "system", "content": "You are a specialized insurance assistant. Your role is to advise customers on insurance-related queries, translating documents and messages related to insurance matters."}]
 
@@ -68,7 +67,7 @@ class AssistantAPIView(APIView):
 
             messages.append(user_input)
 
-            # 4o-mini with computer-vision || OCR better in future due to text?
+            # GPT-4o-mini API call
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
@@ -77,26 +76,26 @@ class AssistantAPIView(APIView):
             
             gpt_response = response.choices[0].message.content.strip()
 
-            # generate a pdf for the user of gpt_respone
-            pdf_filename = os.path.join(settings.MEDIA_ROOT, 'user_files', f"translated_document_{uuid.uuid4()}.pdf")
-            create_translated_pdf_document(gpt_response, pdf_filename)
-            
-            print(f"Länge des Dateipfads: {len(pdf_filename)} Zeichen")
-            
+            # Generate a PDF and store it on S3
+            pdf_filename = f"user_files/translated_document_{uuid.uuid4()}.pdf"
+            with default_storage.open(pdf_filename, 'wb') as pdf_file:
+                create_translated_pdf_document(gpt_response, pdf_file)
+
+            # Save the path in the database
             document_instance = Document.objects.create(
                 user=user,
-                file=pdf_filename
+                file=pdf_filename  # Save the relative path
             )
 
             if file_path:
                 default_storage.delete(file_path)
 
-            # save interaction in db
+            # Save interaction in DB
             interaction = AssistantInteraction.objects.create(
                 user=user,
                 message=user_message,
                 file=request.FILES.get('file') if 'file' in request.FILES else None,
-                response=response.choices[0].message.content.strip()
+                response=gpt_response
             )
 
             serializer = AssistantInteractionSerializer(interaction)

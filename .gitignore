@@ -23,3 +23,6 @@ media/
 # Node.js (falls im frontend benötigt)
 node_modules/
 dist/
+
+# Backups
+CommitsBackup/
