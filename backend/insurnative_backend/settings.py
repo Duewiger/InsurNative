@@ -145,10 +145,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-CORS_ORIGIN_ALLOW_ALL = False
-
-CORS_ALLOW_CREDENTIALS = True
-
 CSRF_TRUSTED_ORIGINS = [
     "https://www.duewiger-projects.com",
     "https://duewiger-projects.com",
@@ -163,6 +159,13 @@ CORS_ALLOWED_ORIGINS = [
     "https://duewiger.com",
 ]
 
+# CORS_ORIGIN_ALLOW_ALL = False -> For Production ofc
+CORS_ORIGIN_ALLOW_ALL = True # Never use this just if you have to ^^
+
+CORS_ALLOW_CREDENTIALS = True
+
+# I REALLY SHOULD NOT USE THIS ^^
+# CSRF_COOKIE_SECURE = False 
 
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
@@ -192,27 +195,6 @@ AUTO_LOGOUT = {
 AXES_FAILURE_LIMIT: 3
 AXES_COOLOFF_TIME: 1
 AXES_RESET_ON_SUCCESS = True
-
-
-# Setup for Productionlogfiles only
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': '/backend/error.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    },
-}
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -269,7 +251,7 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
+# Setup for production logfiles only
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -278,10 +260,25 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
         },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django_debug.log',
+        },
     },
     'loggers': {
-        '': {  # root logger
-            'handlers': ['console'],
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'assistant': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'accounts': {
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
         },

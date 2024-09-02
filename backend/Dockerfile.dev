@@ -19,6 +19,9 @@ RUN pip install -r requirements.txt
 # Install development dependencies (z.B. Werkzeug für Debugging, falls benötigt)
 RUN pip install django-debug-toolbar
 
+# Install Aspose.PDF
+RUN pip install aspose-pdf
+
 # Copy project
 COPY . .
 
