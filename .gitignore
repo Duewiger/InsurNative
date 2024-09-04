@@ -26,5 +26,9 @@ dist/
 
 # Backups
 CommitsBackup/
+
+# AAB
 AppBundles/
+
+# Documents
 Documents/
