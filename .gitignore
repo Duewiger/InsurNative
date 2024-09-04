@@ -3,17 +3,17 @@
 __pycache__/
 
 # Django
-*.log
-*.sqlite3
-db.sqlite3
+backend/*.log
+backend/*.sqlite3
+backend/db.sqlite3
 
 # Virtualenv
 backend/.venv/
 backend/.env
 
 # Static / Media
-staticfiles/
-media/
+backend/staticfiles/
+backend/media/
 
 # IDEs/Editors
 .vscode/
