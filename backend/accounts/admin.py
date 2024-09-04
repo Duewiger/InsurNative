@@ -15,15 +15,15 @@ class CustomAdminUser(UserAdmin):
         "is_staff",
     ]
     fieldsets = UserAdmin.fieldsets + (
-        # Für Admins
+        # For Admins
         (None, {'fields': ('first_name, last_name',)}),
-        # Für Kunden
+        # For Customers
         ('Customer Info', {'fields': ('salutation', 'birth_date', 'street', 'house_number', 'city', 'postal_code', 'phone_number', 'profile_picture')}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        # Für Admins
+        # For Admins
         (None, {'fields': ('first_name, last_name',)}),
-        # Für Kunden
+        # For Customers
         ('Customer Info', {'fields': ('salutation', 'birth_date', 'street', 'house_number', 'city', 'postal_code', 'phone_number', 'profile_picture')}),
     )
     

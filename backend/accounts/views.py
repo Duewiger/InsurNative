@@ -135,11 +135,9 @@ class DocumentListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         try:
-            # Füge hier ein Debug-Logging hinzu, um zu sehen, welche Dokumente abgerufen werden
             queryset = Document.objects.filter(user=user)
-            # Debug-Logging: Anzahl der Dokumente und erste paar Dokumente im Log ausgeben
             logger.debug(f"User {user.id} is fetching documents. Total documents: {queryset.count()}")
-            for doc in queryset[:5]:  # Beispiel: Log die ersten 5 Dokumente
+            for doc in queryset[:5]:
                 logger.debug(f"Document ID: {doc.id}, File: {doc.file.name}")
             return queryset
         except Exception as e:
@@ -155,7 +153,6 @@ class DocumentSearchView(generics.ListAPIView):
         query = self.request.query_params.get('q', None)
         try:
             if query:
-                # Verwende ein Debug-Logging, um die Suchanfrage und Ergebnisse zu überprüfen
                 queryset = Document.objects.filter(
                     Q(user=user) &
                     (Q(file__icontains=query) | Q(id__icontains=query))

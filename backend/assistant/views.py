@@ -49,15 +49,14 @@ class AssistantAPIView(APIView):
                         extracted_text = " ".join([page.extract_text() for page in reader.pages])
                     logger.debug(f"Extracted text from PDF: {extracted_text}")
                 else:
-                    # Encode the image
                     with default_storage.open(file_path, "rb") as file:
                         encoded_image = base64.b64encode(file.read()).decode('utf-8')
-                    logger.debug(f"Encoded image: {encoded_image[:100]}...")  # Log the beginning of the image data
+                    # Log the beginning of the image data
+                    logger.debug(f"Encoded image: {encoded_image[:100]}...")  
 
             openai.api_key = settings.OPENAI_API_KEY
             logger.debug("API Key and configuration set.")
 
-            # Previous Chat Interactions of the user with ChatGPT
             previous_interactions = AssistantInteraction.objects.filter(user=user).order_by('-timestamp')[:10][::-1]
             messages = [{"role": "system", "content": "You are a specialized insurance assistant. Your role is to advise customers on insurance-related queries, translating documents and messages related to insurance matters."}]
 
@@ -77,7 +76,6 @@ class AssistantAPIView(APIView):
 
             messages.append(user_input)
 
-            # GPT-4o-mini API call
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
@@ -87,17 +85,15 @@ class AssistantAPIView(APIView):
             gpt_response = response.choices[0].message.content.strip()
             logger.debug(f"GPT-4o-mini response: {gpt_response}")
 
-            # Generate PDF using PyMuPDF
             document = fitz.open()
             page = document.new_page()
 
             text_rect = fitz.Rect(0, 0, 595, 842)  # A4 size
             page.insert_textbox(text_rect, gpt_response)
 
-            # Save the document to a BytesIO object
             temp_stream = BytesIO()
             document.save(temp_stream)
-            temp_stream.seek(0)  # Reset stream position to the beginning
+            temp_stream.seek(0)
 
             # Save the file to S3
             pdf_filename = f"user_files/translated_document_{uuid.uuid4()}.pdf"
@@ -105,7 +101,6 @@ class AssistantAPIView(APIView):
                 pdf_file.write(temp_stream.getvalue())
             logger.debug(f"PDF generated and saved at: {pdf_filename}")
 
-            # Save the path in the database
             document_instance = UserDocument.objects.create(
                 user=user,
                 file=pdf_filename
@@ -116,7 +111,6 @@ class AssistantAPIView(APIView):
                 default_storage.delete(file_path)
                 logger.debug(f"Temporary file deleted: {file_path}")
 
-            # Save interaction in DB
             interaction = AssistantInteraction.objects.create(
                 user=user,
                 message=user_message,

@@ -69,7 +69,6 @@ MIDDLEWARE = [
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    # place corsheaders before any middleware that can generate responses
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -80,7 +79,6 @@ MIDDLEWARE = [
     "django.middleware.cache.FetchFromCacheMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django_auto_logout.middleware.auto_logout",
-    # Axes to prevent Brute Force Attacks
     "axes.middleware.AxesMiddleware",
 ]
 
