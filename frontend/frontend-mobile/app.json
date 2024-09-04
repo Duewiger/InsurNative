@@ -19,10 +19,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.duewiger.frontendmobile"
+      "package": "com.duewiger.frontendmobile",
+      "versionCode": 1,
+      "permissions": []
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {
