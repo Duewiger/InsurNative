@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { store } from './src/store/index.js';
+import 'react-native-gesture-handler';
 
 import StartUp from './src/features/StartUp/StartUp';
 import Highlights from './src/features/Highlights/Highlights';

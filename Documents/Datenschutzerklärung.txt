@@ -1,0 +1,65 @@
+Datenschutzerklärung für die App der Duewiger Easy UG
+
+Verantwortlich für die Verarbeitung der personenbezogenen Daten im Rahmen dieser App ist:
+
+Duewiger Easy UG (haftungsbeschränkt)
+Inhaber und Geschäftsführer: Kilian Düwiger
+Rissener Dorfstraße 51
+22559 Hamburg
+E-Mail: kd@duewiger.com
+Telefon: +49 (0) 172 745 27 73
+Website: www.duewiger.com
+
+Registergericht: Amtsgericht Hamburg
+Handelsregister: HRB 183240
+Steuernummer: 42/716/02591
+
+1. Allgemeine Informationen
+Der Schutz Ihrer personenbezogenen Daten hat für uns einen hohen Stellenwert. In dieser Datenschutzerklärung informieren wir Sie darüber, welche personenbezogenen Daten im Rahmen der Nutzung unserer App erhoben, verarbeitet und gespeichert werden, sowie über Ihre Rechte als betroffene Person.
+
+2. Zweck der App und der Datenerhebung
+Unsere App ermöglicht es den Nutzern, Versicherungsdokumente per Kamera zu scannen und automatisch übersetzen zu lassen. Die Nutzung der Kamera ist erforderlich, um Dokumente zu erfassen, die dann über ein Backend in der AWS-Cloud verarbeitet und gespeichert werden. Die Übersetzungen erfolgen über die ChatGPT API, und die Dokumente werden in einer AWS-Datenbank und in AWS-S3-Buckets gespeichert.
+
+3. Erhebung und Verarbeitung personenbezogener Daten
+a. Kamera-Zugriff
+Die App benötigt Zugriff auf die Kamera, um Dokumente zu scannen. Dieser Zugriff erfolgt ausschließlich zu dem Zweck, das jeweilige Dokument zu erfassen und zur weiteren Verarbeitung an unser Backend zu senden.
+
+b. Verarbeitung durch das Django-Backend auf AWS
+Die gescannten Dokumente werden nach der Aufnahme an unser Django-Backend gesendet, das auf AWS-Servern in Docker-Containern läuft. Dort werden die Daten verarbeitet, um die Übersetzung zu ermöglichen.
+
+c. Speicherung in AWS-Datenbanken und S3-Buckets
+Die gescannten Dokumente und deren Übersetzungen werden in unserer AWS-Datenbank gespeichert. Zudem werden die übersetzten Dokumente in AWS S3-Buckets gespeichert, um den Nutzern den Zugriff auf die übersetzten Dokumente zu ermöglichen. Diese Speicherung erfolgt auf unbestimmte Zeit oder bis der Nutzer die Löschung der Daten anfordert.
+
+d. Übermittlung an die ChatGPT API
+Die gescannten Dokumente werden zur Übersetzung an die ChatGPT API übermittelt. Die Daten werden nur für den Zweck der Übersetzung verwendet und anschließend an unser Backend zurückgesendet. Wir haben keinen Einfluss auf die Datenverarbeitung durch die ChatGPT API, die ein externer Dienst ist.
+
+e. Lokale Speicherung
+Zusätzlich zur Speicherung auf unseren Servern wird den Nutzern die Möglichkeit geboten, die übersetzten Dokumente als PDF-Dateien lokal auf ihrem Gerät zu speichern.
+
+4. Weitergabe von Daten
+Es erfolgt keine Weitergabe der erfassten Daten an Dritte, außer für die Verarbeitung durch die ChatGPT API und die Speicherung in der AWS-Cloud. Die Daten werden ausschließlich für den oben beschriebenen Zweck verarbeitet und weder zu Werbezwecken noch zu Analysezwecken verwendet.
+
+5. Ihre Rechte als betroffene Person
+Sie haben das Recht:
+
+Auskunft: Informationen über die von uns verarbeiteten personenbezogenen Daten zu erhalten.
+Berichtigung: Unrichtige Daten korrigieren zu lassen.
+Löschung: Die Löschung Ihrer bei uns gespeicherten Daten zu verlangen, sofern diese nicht mehr benötigt werden.
+Widerspruch: Der Verarbeitung Ihrer Daten zu widersprechen.
+Zur Ausübung dieser Rechte können Sie uns unter den oben genannten Kontaktdaten erreichen.
+
+6. Datensicherheit
+Wir setzen technische und organisatorische Maßnahmen ein, um Ihre personenbezogenen Daten vor unbefugtem Zugriff, Verlust oder Zerstörung zu schützen. Die Verarbeitung der Daten erfolgt über verschlüsselte Verbindungen (z. B. SSL/TLS).
+
+7. Änderungen der Datenschutzerklärung
+Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren, um sie an geänderte rechtliche Anforderungen oder neue Funktionen unserer App anzupassen.
+
+8. Kontakt
+Falls Sie Fragen zu dieser Datenschutzerklärung haben oder Ihre Rechte ausüben möchten, können Sie uns über folgende Kontaktdaten erreichen:
+
+Duewiger Easy UG (haftungsbeschränkt)
+Inhaber und Geschäftsführer: Kilian Düwiger
+Rissener Dorfstraße 51
+22559 Hamburg
+E-Mail: kd@duewiger.com
+Telefon: +49 (0) 172 745 27 73

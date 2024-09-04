@@ -1,9 +1,9 @@
 services:
   web:
-    # image: 975050113166.dkr.ecr.eu-central-1.amazonaws.com/insurnative/main:latest # for production pull
-    build: # for local dev
-      context: .
-      dockerfile: Dockerfile.prod
+    image: 975050113166.dkr.ecr.eu-central-1.amazonaws.com/insurnative/main:latest # for production pull
+    # build: # for local dev
+    #   context: .
+    #   dockerfile: Dockerfile.prod
     ports:
       - "8000:8000"
     env_file:
