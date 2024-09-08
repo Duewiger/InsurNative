@@ -2,7 +2,7 @@
   "expo": {
     "name": "frontend-mobile",
     "slug": "frontend-mobile",
-    "version": "1.0.1",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +12,9 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.duewiger.frontendmobile",
+      "buildNumber": "1.0.5"
     },
     "android": {
       "adaptiveIcon": {
@@ -20,8 +22,13 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.duewiger.frontendmobile",
-      "versionCode": 2,
-      "permissions": []
+      "versionCode": 6,
+      "permissions": [],
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
     },
     "web": {
       "favicon": "./assets/icon.png"
@@ -30,6 +37,12 @@
       "eas": {
         "projectId": "237616f0-b261-4fdc-b477-086951f458e1"
       }
-    }
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }

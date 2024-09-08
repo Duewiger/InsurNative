@@ -118,15 +118,13 @@ const DashboardTabs = ({ navigation }) => {
 };
 
 
-SplashScreen.preventAutoHideAsync();
-
-
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
     async function loadResourcesAndData() {
       try {
+        await SplashScreen.preventAutoHideAsync();
         await loadFonts();
       } catch (e) {
         console.warn(e);
@@ -142,7 +140,6 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-
 
   return (
     <Provider store={store}>
