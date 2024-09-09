@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -124,13 +123,11 @@ export default function App() {
   useEffect(() => {
     async function loadResourcesAndData() {
       try {
-        await SplashScreen.preventAutoHideAsync();
         await loadFonts();
       } catch (e) {
         console.warn(e);
       } finally {
         setFontsLoaded(true);
-        await SplashScreen.hideAsync();
       }
     }
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.6] - 2024-09-09
+### Added
+- Deleted own `expo-splash-screen` implementation due to android native
+
+### Changed
+- Minor bug fixes and optimizations ahead of the initial public release.
+
 ## [1.0.5] - 2024-09-07
 ### Added
 - Updated all outdated Packages

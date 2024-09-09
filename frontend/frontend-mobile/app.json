@@ -2,19 +2,14 @@
   "expo": {
     "name": "frontend-mobile",
     "slug": "frontend-mobile",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.duewiger.frontendmobile",
-      "buildNumber": "1.0.5"
+      "buildNumber": "1.0.6"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,13 +17,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.duewiger.frontendmobile",
-      "versionCode": 6,
-      "permissions": [],
-      "splash": {
-        "image": "./assets/splash.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
-      }
+      "versionCode": 7,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/icon.png"
